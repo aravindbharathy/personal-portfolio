@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Project" ALTER COLUMN "timeframe" DROP NOT NULL,
+ALTER COLUMN "role" DROP NOT NULL;

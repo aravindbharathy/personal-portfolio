@@ -1,0 +1,229 @@
+{
+  "main": {
+    "id": "789d3ee01d449177",
+    "type": "split",
+    "children": [
+      {
+        "id": "d308d7fe88a51c32",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1c1d24668df9a9e9",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "New tab"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "3d60b194e9a41aae",
+    "type": "split",
+    "children": [
+      {
+        "id": "c36fa3fce169a3b1",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "77c1a80c2363c4e0",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "1c8330b5da34f04c",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "9a7d22f39f58b038",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "d30449885f29e9b1",
+    "type": "split",
+    "children": [
+      {
+        "id": "8474087a54d487eb",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "a80011ff149788ed",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "97c47994c41c69e0",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "1edd28f38548281e",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "db415243d54acd32",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "05d438bafbe5dbfe",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Docs/architecture/system-architecture.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of system-architecture"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "77c1a80c2363c4e0",
+  "lastOpenFiles": [
+    "backend/prisma/migrations/20251122071243_make_timeframe_and_role_optional/migration.sql",
+    "backend/prisma/migrations/20251122071243_make_timeframe_and_role_optional",
+    "frontend/src/hooks/useProjects.ts.tmp.40521.1763795344939",
+    "backend/prisma/migrations/20251122070859_add_project_links/migration.sql",
+    "backend/prisma/migrations/20251122070859_add_project_links",
+    "backend/src/schemas/project.schema.ts.tmp.40521.1763795333595",
+    "frontend/src/hooks/useProjects.ts.tmp.40521.1763795285584",
+    "backend/prisma/migrations/20251122070759_add_project_metadata_fields/migration.sql",
+    "backend/prisma/migrations/20251122070759_add_project_metadata_fields",
+    "frontend/src/pages/ProjectDetail.tsx.tmp.40521.1763794919896",
+    "frontend/src/components/admin/ProjectForm.tsx.tmp.40521.1763794825284",
+    "Docs/03-how/implementation/publications-timeline.impl.md",
+    "Docs/03-how/implementation/guidebooks.impl.md",
+    "Docs/02-what/01-core-product.md",
+    "Docs/03-how/architecture/api-endpoints.md",
+    "Docs/05-project-mgmt/README.md",
+    "Docs/04-guides/README.md",
+    "Docs/03-how/README.md",
+    "Docs/02-what/README.md",
+    "Docs/README.md",
+    "Docs/05-project-mgmt/project-status.md",
+    "Docs/04-guides/troubleshooting.md",
+    "Docs/04-guides/admin-user-guide.md",
+    "Docs/03-how/implementation/authentication.impl.md",
+    "Docs/03-how/implementation/admin-panel.impl.md",
+    "Docs/03-how/implementation/projects-api.impl.md",
+    "Docs/03-how/architecture/ADR-004-react-query.md",
+    "Docs/03-how/architecture/ADR-003-jwt-cookies.md",
+    "Docs/03-how/architecture/ADR-002-prisma-orm.md",
+    "Docs/03-how/architecture/ADR-001-nextjs-backend.md",
+    "Docs/03-how/specs/authentication.spec.md",
+    "Docs/03-how/specs/admin-dashboard.spec.md",
+    "Docs/03-how/specs/projects-crud.spec.md",
+    "Docs/02-what/features/authentication.md",
+    "Docs/02-what/features/admin-panel.md",
+    "Docs/05-project-mgmt/implementation-guide.md",
+    "frontend/node_modules/date-fns/docs/logotype.svg",
+    "frontend/node_modules/date-fns/docs/logo.svg",
+    "backend/node_modules/prisma/build/public/assets/tick.8cbb6a93.svg",
+    "backend/node_modules/prisma/build/public/assets/tick-indeterminate.aec8a44d.svg",
+    "backend/node_modules/prisma/build/public/assets/string.ea615a24.svg",
+    "backend/node_modules/prisma/build/public/assets/settings.5ad25af2.svg",
+    "backend/node_modules/prisma/build/public/assets/search.2ed766ce.svg",
+    "backend/node_modules/prisma/build/public/assets/refresh.d5448ccc.svg",
+    "backend/node_modules/prisma/build/public/assets/plus.8fbf7ad3.svg",
+    "backend/node_modules/prisma/build/public/assets/play.8811691e.svg"
+  ]
+}
