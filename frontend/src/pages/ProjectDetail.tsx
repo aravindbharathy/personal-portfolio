@@ -3,13 +3,22 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useProject } from "@/hooks/useProjects";
+import { useProject, type ProjectPictureGrid } from "@/hooks/useProjects";
 import { ArrowLeft, ExternalLink } from "lucide-react";
+import { PictureGrid } from "@/components/PictureGrid";
 
 const ProjectDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { data: project, isLoading, error } = useProject(slug!);
+
+  // Helper function to get picture grids for a specific position
+  const getGridsForPosition = (position: ProjectPictureGrid['position']) => {
+    if (!project?.pictureGrids) return [];
+    return project.pictureGrids
+      .filter((grid) => grid.position === position)
+      .sort((a, b) => a.order - b.order);
+  };
 
   if (isLoading) {
     return (
@@ -128,6 +137,11 @@ const ProjectDetail = () => {
       {/* Research Objectives Section */}
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-4xl">
+          {/* Picture grids before objectives */}
+          {getGridsForPosition('before_objectives').map((grid, index) => (
+            <PictureGrid key={`before-obj-${index}`} grid={grid} />
+          ))}
+
           <h2 className="text-4xl md:text-5xl font-bold mb-12">
             {project.objectivesHeading || 'Research Objectives'}
           </h2>
@@ -136,12 +150,22 @@ const ProjectDetail = () => {
               {project.objectives}
             </p>
           </div>
+
+          {/* Picture grids after objectives */}
+          {getGridsForPosition('after_objectives').map((grid, index) => (
+            <PictureGrid key={`after-obj-${index}`} grid={grid} />
+          ))}
         </div>
       </section>
 
       {/* Methodology Section */}
       <section className="py-20 px-4 bg-muted">
         <div className="container mx-auto max-w-4xl">
+          {/* Picture grids before methodology */}
+          {getGridsForPosition('before_methodology').map((grid, index) => (
+            <PictureGrid key={`before-meth-${index}`} grid={grid} />
+          ))}
+
           <h2 className="text-4xl md:text-5xl font-bold mb-12">
             {project.methodologyHeading || 'Methodology & Approach'}
           </h2>
@@ -167,12 +191,22 @@ const ProjectDetail = () => {
               </div>
             )}
           </div>
+
+          {/* Picture grids after methodology */}
+          {getGridsForPosition('after_methodology').map((grid, index) => (
+            <PictureGrid key={`after-meth-${index}`} grid={grid} />
+          ))}
         </div>
       </section>
 
       {/* Key Findings Section */}
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-4xl">
+          {/* Picture grids before findings */}
+          {getGridsForPosition('before_findings').map((grid, index) => (
+            <PictureGrid key={`before-find-${index}`} grid={grid} />
+          ))}
+
           <h2 className="text-4xl md:text-5xl font-bold mb-12">
             {project.findingsHeading || 'Key Findings & Insights'}
           </h2>
@@ -181,12 +215,22 @@ const ProjectDetail = () => {
               {project.findings}
             </p>
           </div>
+
+          {/* Picture grids after findings */}
+          {getGridsForPosition('after_findings').map((grid, index) => (
+            <PictureGrid key={`after-find-${index}`} grid={grid} />
+          ))}
         </div>
       </section>
 
       {/* Impact Section */}
       <section className="py-20 px-4 bg-muted">
         <div className="container mx-auto max-w-4xl">
+          {/* Picture grids before impact */}
+          {getGridsForPosition('before_impact').map((grid, index) => (
+            <PictureGrid key={`before-impact-${index}`} grid={grid} />
+          ))}
+
           <h2 className="text-4xl md:text-5xl font-bold mb-12">
             {project.impactHeading || 'Impact & Outcomes'}
           </h2>
@@ -195,6 +239,11 @@ const ProjectDetail = () => {
               {project.impact}
             </p>
           </div>
+
+          {/* Picture grids after impact */}
+          {getGridsForPosition('after_impact').map((grid, index) => (
+            <PictureGrid key={`after-impact-${index}`} grid={grid} />
+          ))}
         </div>
       </section>
 

@@ -1,6 +1,21 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, ApiResponse } from '@/lib/api';
 
+export interface ProjectGridPicture {
+  url: string;
+  alt: string;
+  caption?: string;
+  order: number;
+}
+
+export interface ProjectPictureGrid {
+  id?: string;
+  position: 'before_objectives' | 'after_objectives' | 'before_methodology' | 'after_methodology' | 'before_findings' | 'after_findings' | 'before_impact' | 'after_impact';
+  columns: 1 | 2 | 3;
+  order: number;
+  pictures: ProjectGridPicture[];
+}
+
 export interface Project {
   id: string;
   title: string;
@@ -32,6 +47,7 @@ export interface Project {
   tags: Array<{ tag: { id: string; name: string; slug: string } }>;
   images?: Array<{ id: string; url: string; alt: string; caption?: string; order: number }>;
   links?: Array<{ title: string; url: string }>;
+  pictureGrids?: ProjectPictureGrid[];
 }
 
 export function useProjects(params?: Record<string, any>) {

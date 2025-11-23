@@ -16,9 +16,10 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { useCreateProject, useUpdateProject, type Project } from '@/hooks/useProjects';
+import { useCreateProject, useUpdateProject, type Project, type ProjectPictureGrid } from '@/hooks/useProjects';
 import { useTags } from '@/hooks/useTags';
 import { X, Plus } from 'lucide-react';
+import { PictureGridManager } from './PictureGridManager';
 
 const projectSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200),
@@ -63,6 +64,7 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
   const [methods, setMethods] = useState<string[]>([]);
   const [linkInput, setLinkInput] = useState({ title: '', url: '' });
   const [links, setLinks] = useState<Array<{ title: string; url: string }>>([]);
+  const [pictureGrids, setPictureGrids] = useState<ProjectPictureGrid[]>([]);
 
   const {
     register,
@@ -117,6 +119,10 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
       if (project.links && Array.isArray(project.links)) {
         setLinks(project.links as Array<{ title: string; url: string }>);
       }
+      // Set picture grids
+      if (project.pictureGrids && Array.isArray(project.pictureGrids)) {
+        setPictureGrids(project.pictureGrids);
+      }
     }
   }, [project]);
 
@@ -142,6 +148,7 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
         tagIds: selectedTags,
         methodsUsed: methods,
         links: links.length > 0 ? links : undefined,
+        pictureGrids: pictureGrids.length > 0 ? pictureGrids : undefined,
       };
 
       if (project) {
@@ -558,6 +565,11 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
             </div>
           </div>
         )}
+      </div>
+
+      {/* Picture Grids */}
+      <div className="border-t pt-4">
+        <PictureGridManager pictureGrids={pictureGrids} onChange={setPictureGrids} />
       </div>
 
       {/* Settings */}

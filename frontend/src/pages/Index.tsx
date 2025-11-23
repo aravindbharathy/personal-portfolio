@@ -42,17 +42,26 @@ const Index = () => {
       <section className="pt-32 pb-16 px-4">
         <div className="container mx-auto max-w-3xl">
           <div className="space-y-6">
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground">
-              Hi, I'm Aravind Bharathy
+            <h1 className="text-4xl md:text-3xl font-bold text-foreground">
+              Hi, I'm Aravind, a UX Researcher.
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              I'm a user researcher who believes that understanding people is the foundation of creating meaningful experiences.
-              My work focuses on uncovering insights that help teams make better decisions and build products people actually need.
+              I'm an experienced industry researcher with background in Human-Computer Interaction and Computer Science. </p>
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              Right now, I am focused on leveraging research to build with our AI future in mind. I also advise a handful of AI startups. Check out my latest thoughts on <a href="/publications" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Medium</a> and my <a href="/guidebooks" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Guidebooks</a> for building with AI .
             </p>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              I've spent my career talking to users, analyzing behaviors, and translating findings into actionable recommendations.
-              Whether it's through interviews, usability studies, or data analysis, I'm passionate about connecting what users say,
-              do, and need with what teams can build.
+              Before this, as the Research Lead, I brought several 0-1 product experiences to market at Google Cloud (
+                <a href="https://cloud.google.com/network-intelligence-center?hl=en" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Network Intelligence</a>,&nbsp;
+                <a href="https://cloud.google.com/cdn?hl=en#leverage-googles-decade-of-experience-delivering-content" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Content Delivery</a>, and&nbsp; 
+                <a href="https://cloud.google.com/solutions/cross-cloud-network?hl=en" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Cross-Cloud Solutions</a>
+              ) and YouTube (
+                <a href="https://artists.youtube/resources/channel-optimization/" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Music Artist Channels</a>,&nbsp; 
+                <a href="https://artists.youtube/resources/analytics-for-artists/" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">YouTube Artist Analytics</a>
+              ).
+            </p>
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              In several areas of my life, I consider myself a deep generalist. My super power is to systematically understand complex new domains and help teams build user-centered products within them. I enjoy sharing and teaching these discoveries through writing and mentorship.
             </p>
             <div className="flex flex-wrap gap-3 pt-4">
               <Button asChild>

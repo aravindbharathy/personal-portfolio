@@ -14,6 +14,29 @@ export const projectLinkSchema = z.object({
   url: z.string().url('Invalid link URL'),
 });
 
+export const projectGridPictureSchema = z.object({
+  url: z.string().url('Invalid picture URL'),
+  alt: z.string().min(1, 'Alt text is required'),
+  caption: z.string().optional(),
+  order: z.number().int().min(0),
+});
+
+export const projectPictureGridSchema = z.object({
+  position: z.enum([
+    'before_objectives',
+    'after_objectives',
+    'before_methodology',
+    'after_methodology',
+    'before_findings',
+    'after_findings',
+    'before_impact',
+    'after_impact',
+  ]),
+  columns: z.number().int().min(1).max(3),
+  order: z.number().int().min(0).default(0),
+  pictures: z.array(projectGridPictureSchema).min(1, 'At least one picture is required'),
+});
+
 export const createProjectSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200, 'Title is too long'),
   overview: z.string().min(10, 'Overview must be at least 10 characters').max(1000),
@@ -41,6 +64,7 @@ export const createProjectSchema = z.object({
   tagIds: z.array(z.string()),
   images: z.array(projectImageSchema).optional(),
   links: z.array(projectLinkSchema).optional(),
+  pictureGrids: z.array(projectPictureGridSchema).optional(),
 });
 
 export const updateProjectSchema = createProjectSchema.partial();

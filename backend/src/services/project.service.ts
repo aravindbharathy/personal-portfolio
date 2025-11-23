@@ -47,6 +47,14 @@ export class ProjectService {
           images: {
             orderBy: { order: 'asc' },
           },
+          pictureGrids: {
+            include: {
+              pictures: {
+                orderBy: { order: 'asc' },
+              },
+            },
+            orderBy: { order: 'asc' },
+          },
           author: {
             select: {
               name: true,
@@ -85,6 +93,14 @@ export class ProjectService {
           orderBy: { order: 'asc' },
           take: 1, // Just the first image for featured display
         },
+        pictureGrids: {
+          include: {
+            pictures: {
+              orderBy: { order: 'asc' },
+            },
+          },
+          orderBy: { order: 'asc' },
+        },
       },
       orderBy: { createdAt: 'desc' },
       take: 6,
@@ -104,6 +120,14 @@ export class ProjectService {
           },
         },
         images: {
+          orderBy: { order: 'asc' },
+        },
+        pictureGrids: {
+          include: {
+            pictures: {
+              orderBy: { order: 'asc' },
+            },
+          },
           orderBy: { order: 'asc' },
         },
         author: {
@@ -126,7 +150,7 @@ export class ProjectService {
    * Create a new project
    */
   async createProject(data: CreateProjectInput, authorId: string) {
-    const { tagIds, images, ...projectData } = data;
+    const { tagIds, images, pictureGrids, ...projectData } = data;
 
     // Generate unique slug
     const baseSlug = slugify(data.title);
@@ -175,6 +199,31 @@ export class ProjectService {
         });
       }
 
+      // Create picture grids with their pictures
+      if (pictureGrids && pictureGrids.length > 0) {
+        for (const grid of pictureGrids) {
+          const { pictures, ...gridData } = grid;
+
+          // Create the grid
+          const createdGrid = await tx.projectPictureGrid.create({
+            data: {
+              projectId: newProject.id,
+              ...gridData,
+            },
+          });
+
+          // Create the pictures for this grid
+          if (pictures && pictures.length > 0) {
+            await tx.projectGridPicture.createMany({
+              data: pictures.map((pic) => ({
+                gridId: createdGrid.id,
+                ...pic,
+              })),
+            });
+          }
+        }
+      }
+
       // If published, add to timeline
       if (newProject.published) {
         const tags = await tx.tag.findMany({
@@ -211,7 +260,7 @@ export class ProjectService {
    * Update a project
    */
   async updateProject(id: string, data: UpdateProjectInput) {
-    const { tagIds, images, ...projectData } = data;
+    const { tagIds, images, pictureGrids, ...projectData } = data;
 
     // If title is being updated, regenerate slug
     let slug: string | undefined;
@@ -277,6 +326,39 @@ export class ProjectService {
               ...img,
             })),
           });
+        }
+      }
+
+      // Update picture grids if provided
+      if (pictureGrids !== undefined) {
+        // Delete existing picture grids (cascades to pictures)
+        await tx.projectPictureGrid.deleteMany({
+          where: { projectId: id },
+        });
+
+        // Create new picture grids with their pictures
+        if (pictureGrids.length > 0) {
+          for (const grid of pictureGrids) {
+            const { pictures, ...gridData } = grid;
+
+            // Create the grid
+            const createdGrid = await tx.projectPictureGrid.create({
+              data: {
+                projectId: id,
+                ...gridData,
+              },
+            });
+
+            // Create the pictures for this grid
+            if (pictures && pictures.length > 0) {
+              await tx.projectGridPicture.createMany({
+                data: pictures.map((pic) => ({
+                  gridId: createdGrid.id,
+                  ...pic,
+                })),
+              });
+            }
+          }
         }
       }
 

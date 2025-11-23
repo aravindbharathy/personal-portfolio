@@ -97,9 +97,10 @@ model Project {
   authorId     String
 
   // Relations
-  author User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  tags   ProjectTag[]
-  images ProjectImage[]
+  author      User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  tags        ProjectTag[]
+  images      ProjectImage[]
+  pictureGrids ProjectPictureGrid[]
 
   @@index([slug])
   @@index([published])
@@ -121,6 +122,36 @@ model ProjectImage {
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([projectId])
+}
+
+model ProjectPictureGrid {
+  id          String   @id @default(cuid())
+  projectId   String
+  position    String   // e.g., "after_objectives", "before_methodology", "after_findings"
+  columns     Int      // 1, 2, or 3 columns
+  order       Int      @default(0) // For ordering multiple grids at the same position
+  createdAt   DateTime @default(now())
+
+  // Relations
+  project Project              @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  pictures ProjectGridPicture[]
+
+  @@index([projectId])
+  @@index([position])
+}
+
+model ProjectGridPicture {
+  id      String @id @default(cuid())
+  gridId  String
+  url     String
+  alt     String
+  caption String?
+  order   Int    @default(0)
+
+  // Relations
+  grid ProjectPictureGrid @relation(fields: [gridId], references: [id], onDelete: Cascade)
+
+  @@index([gridId])
 }
 
 model Publication {
