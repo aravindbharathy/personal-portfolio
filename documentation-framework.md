@@ -19,11 +19,13 @@ Product documentation (Why/What) informs business decisions. Development documen
 docs/
 ├── 01-why/              # Strategic Vision & Market Context
 ├── 02-what/             # Product Definition & Features
-├── 03-how/      # Systematic Development (Backwards Build)
+├── 03-how/              # Systematic Development (Backwards Build)
 │   ├── specs/           # WHAT to build (requirements)
 │   ├── architecture/    # WHY decisions were made (ADRs)
 │   ├── tests/           # HOW to verify (test plans)
 │   ├── implementation/  # HOW it's built (technical docs)
+│   │   ├── bug-fixes/   # Bug fix documentation
+│   │   └── *.impl.md    # Feature implementation docs
 │   └── sync/            # Drift detection logs
 ├── 04-guides/           # Usage & Onboarding
 └── 05-project-mgmt/     # Planning & Coordination
@@ -224,6 +226,35 @@ Code snippets showing integration
 **Examples:**
 - `brutal-analysis.impl.md` - AST parsing, 12 analyzers, grading logic
 - `permission-system.impl.md` - Learning algorithm, storage format
+
+#### Bug Fix Documentation (03-how/implementation/bug-fixes/)
+**Purpose:** Document bug fixes with root cause analysis and solutions
+
+**File Naming:** `bug-fixes-YYYY-MM-DD.impl.md` (date when fix was implemented)
+
+**Required Sections:**
+1. **Overview** - Summary of bugs fixed
+2. **Problem Statement** - What was broken
+3. **Root Cause Analysis** - Why it was broken
+4. **Solution** - How it was fixed with code examples
+5. **Files Modified** - Specific files and line numbers changed
+6. **Testing** - How to verify the fix works
+7. **Impact** - User and system impact
+
+**When to Create Bug Fix Doc:**
+✅ Non-trivial bugs requiring investigation
+✅ Bugs affecting multiple components
+✅ Issues with important business logic
+✅ Fixes that future developers should understand
+
+❌ Don't Create When:
+- Typo fixes or one-line changes
+- Dependency version updates
+- Simple configuration changes
+
+**Examples:**
+- `bug-fixes-2025-12-09.impl.md` - Timeline date sync, scroll position reset
+- `bug-fixes-2025-12-08.impl.md` - Guidebook draft visibility, date picker format
 
 ---
 
