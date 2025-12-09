@@ -18,13 +18,24 @@ export default function PublicationForm({
   onSuccess,
   onCancel,
 }: PublicationFormProps) {
+  // Helper function to convert ISO string to datetime-local format
+  const toDateTimeLocal = (isoString: string) => {
+    const date = new Date(isoString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
   const [formData, setFormData] = useState({
     title: '',
     excerpt: '',
     content: '',
     externalUrl: '',
     platform: 'MEDIUM',
-    publishedAt: new Date().toISOString(),
+    publishedAt: toDateTimeLocal(new Date().toISOString()),
     readTime: 5,
     imageUrl: '',
     featured: false,
@@ -37,20 +48,13 @@ export default function PublicationForm({
 
   useEffect(() => {
     if (publication) {
-      // Convert ISO datetime string to datetime-local format (YYYY-MM-DDTHH:mm)
-      let publishedAtStr = publication.publishedAt;
-      if (publishedAtStr) {
-        const date = new Date(publishedAtStr);
-        publishedAtStr = date.toISOString().slice(0, 16);
-      }
-
       setFormData({
         title: publication.title || '',
         excerpt: publication.excerpt || publication.description || '',
         content: publication.content || '',
         externalUrl: publication.externalUrl || publication.url || '',
         platform: publication.platform || 'MEDIUM',
-        publishedAt: new Date(publication.publishedAt || new Date()).toISOString(),
+        publishedAt: toDateTimeLocal(publication.publishedAt || new Date().toISOString()),
         readTime: publication.readTime || 5,
         imageUrl: publication.imageUrl || '',
         featured: publication.featured || false,
@@ -75,6 +79,7 @@ export default function PublicationForm({
     try {
       const submitData = {
         ...formData,
+        publishedAt: new Date(formData.publishedAt).toISOString(),
         readTime: formData.readTime || undefined,
         imageUrl: formData.imageUrl || undefined,
       };
@@ -195,11 +200,9 @@ export default function PublicationForm({
         <Input
           id="publishedAt"
           type="datetime-local"
-          value={formData.publishedAt.slice(0, 16)}
+          value={formData.publishedAt}
           onChange={(e) => {
-            const dateStr = e.target.value;
-            const isoString = new Date(dateStr).toISOString();
-            setFormData({ ...formData, publishedAt: isoString });
+            setFormData({ ...formData, publishedAt: e.target.value });
           }}
           required
         />

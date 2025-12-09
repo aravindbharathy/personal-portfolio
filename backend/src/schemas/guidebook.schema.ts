@@ -24,6 +24,7 @@ export const guidebookQuerySchema = z.object({
   page: z.coerce.number().int().min(1).optional(),
   limit: z.coerce.number().int().min(1).max(100).optional(),
   featured: z.coerce.boolean().optional(),
+  published: z.coerce.boolean().optional(),
   sort: z.enum(['lastUpdated', 'createdAt', 'title']).optional(),
   order: z.enum(['asc', 'desc']).optional(),
 });

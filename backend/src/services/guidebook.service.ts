@@ -19,13 +19,14 @@ export class GuidebookService {
       page = 1,
       limit = 20,
       featured,
+      published,
       sort = 'lastUpdated',
       order = 'desc',
     } = query;
     const { skip, take } = calculatePagination({ page, limit });
 
     const where: Prisma.GuidebookWhereInput = {
-      published: true,
+      ...(published !== undefined && { published }),
       ...(featured !== undefined && { featured }),
     };
 

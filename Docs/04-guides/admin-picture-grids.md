@@ -1,6 +1,11 @@
-# Admin Guide: Managing Picture Grids in Projects
+# Admin Guide: Project Management
 
 ## Overview
+
+This guide covers managing projects in the admin panel, including:
+- Using markdown formatting in project content
+- Adding picture grids to enhance visual storytelling
+- Best practices for creating compelling case studies
 
 Picture grids allow you to insert responsive image galleries at strategic positions within your project case studies. You can showcase research artifacts, design mockups, user testing sessions, and visual outcomes to enhance your storytelling.
 
@@ -18,7 +23,7 @@ Picture grids allow you to insert responsive image galleries at strategic positi
 
 1. Admin account access (email: `admin@example.com`)
 2. Project created or being edited
-3. Image URLs ready (hosted externally)
+3. Image URLs ready for picture grids (hosted externally)
 
 ### Accessing the Admin Panel
 
@@ -26,6 +31,191 @@ Picture grids allow you to insert responsive image galleries at strategic positi
 2. Enter your admin credentials
 3. Click "Projects" in the sidebar
 4. Click "New Project" or edit an existing project
+
+---
+
+## Using Markdown in Project Content
+
+### What is Markdown?
+
+Markdown is a lightweight formatting syntax that lets you add structure and style to your text using simple characters. It's converted to beautifully formatted content when displayed on your portfolio.
+
+### Markdown Editor Features
+
+All major content fields now support markdown:
+- **Overview** - Brief project summary
+- **Research Objectives** - Goals and questions
+- **Methodology & Approach** - Methods and processes
+- **Key Findings & Insights** - Discoveries and learnings
+- **Impact & Outcomes** - Results and effects
+
+Each field includes:
+- Toolbar with common formatting options
+- Live syntax highlighting
+- Helpful hints about markdown capabilities
+- Form validation for required fields
+
+### Common Markdown Syntax
+
+#### Text Formatting
+
+```markdown
+**Bold text** or __bold text__
+*Italic text* or _italic text_
+~~Strikethrough text~~
+`inline code`
+```
+
+**Result**:
+- **Bold text**
+- *Italic text*
+- ~~Strikethrough text~~
+- `inline code`
+
+#### Lists
+
+**Unordered Lists**:
+```markdown
+- First item
+- Second item
+  - Nested item
+  - Another nested item
+- Third item
+```
+
+**Ordered Lists**:
+```markdown
+1. First step
+2. Second step
+3. Third step
+```
+
+**Task Lists**:
+```markdown
+- [x] Completed task
+- [ ] Incomplete task
+```
+
+#### Links
+
+```markdown
+[Link text](https://example.com)
+[Research paper](https://doi.org/10.1234/example)
+```
+
+#### Headings
+
+```markdown
+## Section Heading
+### Subsection
+#### Minor Heading
+```
+
+**Note**: Use headings sparingly in content fields, as each section already has a main heading.
+
+#### Blockquotes
+
+```markdown
+> This is a quote from a participant
+> that spans multiple lines.
+```
+
+#### Code Blocks
+
+````markdown
+```
+function analyzeData() {
+  return results;
+}
+```
+````
+
+#### Tables
+
+```markdown
+| Method | Participants | Duration |
+|--------|--------------|----------|
+| Interviews | 15 | 2 weeks |
+| Surveys | 200 | 1 week |
+```
+
+### Markdown Best Practices
+
+**DO**:
+- Use lists to break down complex information
+- Bold key findings or important metrics
+- Link to external resources or references
+- Use headings to create sub-sections within long content
+- Keep paragraphs concise (2-3 sentences)
+
+**DON'T**:
+- Overuse formatting (not everything needs to be bold)
+- Create deeply nested lists (2 levels max)
+- Use large headings (stick to `##` and `###`)
+- Include raw HTML (markdown syntax only)
+- Forget alt text when referencing external images
+
+### Example: Well-Formatted Content
+
+```markdown
+## Key Research Questions
+
+Our study aimed to answer:
+
+1. **Why do users abandon their carts?**
+   - Security concerns
+   - Unexpected costs
+   - Complex checkout process
+
+2. **What friction points exist in the current flow?**
+   - Multiple form pages
+   - Unclear shipping information
+   - No guest checkout option
+
+### Primary Finding
+
+> 65% of participants cited "unexpected shipping costs"
+> as the main reason for abandonment.
+
+This aligns with industry research showing that **surprise costs**
+are the leading cause of cart abandonment across e-commerce sites.
+
+**Impact**: By displaying shipping costs earlier, we reduced
+abandonment by 23%.
+```
+
+### Tips for Each Content Field
+
+**Overview** (Brief summary):
+- 2-3 sentences max
+- Focus on the core problem and solution
+- Avoid formatting - keep it simple and readable
+- Use plain text or minimal markdown
+
+**Objectives** (Research goals):
+- Use numbered lists for specific research questions
+- Bold the key objectives
+- Keep it scannable
+
+**Methodology** (Approach and methods):
+- Use lists to break down methods
+- Include participant counts, timeline
+- Bold method names for clarity
+- Link to tools or frameworks used
+
+**Findings** (Key insights):
+- Use lists for multiple findings
+- Bold important statistics or percentages
+- Use blockquotes for participant quotes
+- Create tables for comparative data
+
+**Impact** (Results and outcomes):
+- Lead with the main result
+- Use numbered lists for multiple impacts
+- Bold metrics and improvements
+- Link to live products or publications
+
+---
 
 ## Adding Picture Grids
 
@@ -303,6 +493,26 @@ cd backend
 npx ts-node scripts/create-admin-user.ts
 ```
 
+### Rebuilding Timeline
+
+If the homepage "Latest Activity" shows incorrect or outdated content:
+
+```bash
+cd backend
+npx ts-node scripts/rebuild-timeline.ts
+```
+
+This script:
+- Clears existing timeline entries
+- Rebuilds from actual database content (projects, publications, guidebooks)
+- Fixes discrepancies between timeline and actual content
+- Reports count of items added
+
+Run this after:
+- Bulk content changes
+- Database restore
+- Noticing incorrect homepage activity counts
+
 ## Support
 
 For technical issues:
@@ -313,4 +523,6 @@ For technical issues:
 
 ## Version History
 
+- **v1.2** (2025-12-08): Fixed guidebook draft visibility, publication date picker, and timeline sync issues
+- **v1.1** (2025-11-23): Added markdown support for all content fields with live editor
 - **v1.0** (2025-11-23): Initial release with 8 position options and 1-3 column layouts
