@@ -42,6 +42,7 @@ export interface Project {
   methodsUsed: string[];
   featured: boolean;
   published: boolean;
+  publishedAt?: string;
   createdAt: string;
   updatedAt: string;
   tags: Array<{ tag: { id: string; name: string; slug: string } }>;

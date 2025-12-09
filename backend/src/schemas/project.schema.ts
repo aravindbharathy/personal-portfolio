@@ -61,6 +61,7 @@ export const createProjectSchema = z.object({
   methodsUsed: z.array(z.string()),
   featured: z.boolean().default(false),
   published: z.boolean().default(false),
+  publishedAt: z.string().datetime().optional(),
   tagIds: z.array(z.string()),
   images: z.array(projectImageSchema).optional(),
   links: z.array(projectLinkSchema).optional(),

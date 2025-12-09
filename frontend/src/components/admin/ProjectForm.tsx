@@ -20,6 +20,7 @@ import { useCreateProject, useUpdateProject, type Project, type ProjectPictureGr
 import { useTags } from '@/hooks/useTags';
 import { X, Plus } from 'lucide-react';
 import { PictureGridManager } from './PictureGridManager';
+import { MarkdownEditor } from './MarkdownEditor';
 
 const projectSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200),
@@ -43,6 +44,7 @@ const projectSchema = z.object({
   participants: z.string().optional(),
   featured: z.boolean().default(false),
   published: z.boolean().default(false),
+  publishedAt: z.string().optional(),
 });
 
 type ProjectFormData = z.infer<typeof projectSchema>;
@@ -54,6 +56,18 @@ interface ProjectFormProps {
 }
 
 export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFormProps) {
+  // Helper function to convert ISO string to datetime-local format
+  const toDateTimeLocal = (isoString?: string | null) => {
+    if (!isoString) return '';
+    const date = new Date(isoString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
   const { toast } = useToast();
   const createProject = useCreateProject();
   const updateProject = useUpdateProject();
@@ -94,6 +108,7 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
           participants: project.participants || '',
           featured: project.featured,
           published: project.published,
+          publishedAt: toDateTimeLocal(project.publishedAt),
         }
       : {
           objectivesHeading: 'Research Objectives',
@@ -102,6 +117,7 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
           impactHeading: 'Impact & Outcomes',
           featured: false,
           published: false,
+          publishedAt: '',
         },
   });
 
@@ -145,6 +161,8 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
         teamSize: data.teamSize?.trim() || undefined,
         participants: data.participants?.trim() || undefined,
         industry: data.industry?.trim() || undefined,
+        // Convert publishedAt to ISO format if provided
+        publishedAt: data.publishedAt ? new Date(data.publishedAt).toISOString() : undefined,
         tagIds: selectedTags,
         methodsUsed: methods,
         links: links.length > 0 ? links : undefined,
@@ -218,18 +236,16 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
       </div>
 
       {/* Overview */}
-      <div className="space-y-2">
-        <Label htmlFor="overview">Overview *</Label>
-        <Textarea
-          id="overview"
-          {...register('overview')}
-          placeholder="Brief summary of the project..."
-          rows={3}
-        />
-        {errors.overview && (
-          <p className="text-sm text-destructive">{errors.overview.message}</p>
-        )}
-      </div>
+      <MarkdownEditor
+        id="overview"
+        label="Overview"
+        value={watch('overview') || ''}
+        onChange={(value) => setValue('overview', value)}
+        placeholder="Brief summary of the project..."
+        required
+        error={errors.overview?.message}
+        minHeight={150}
+      />
 
       {/* Research Type */}
       <div className="space-y-2">
@@ -309,18 +325,16 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
             placeholder="Research Objectives"
           />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="objectives">Content *</Label>
-          <Textarea
-            id="objectives"
-            {...register('objectives')}
-            placeholder="What were the research goals and questions?"
-            rows={4}
-          />
-          {errors.objectives && (
-            <p className="text-sm text-destructive">{errors.objectives.message}</p>
-          )}
-        </div>
+        <MarkdownEditor
+          id="objectives"
+          label="Content"
+          value={watch('objectives') || ''}
+          onChange={(value) => setValue('objectives', value)}
+          placeholder="What were the research goals and questions?"
+          required
+          error={errors.objectives?.message}
+          minHeight={200}
+        />
       </div>
 
       {/* Methodology */}
@@ -335,18 +349,16 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
             placeholder="Methodology & Approach"
           />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="methodology">Content *</Label>
-          <Textarea
-            id="methodology"
-            {...register('methodology')}
-            placeholder="Describe the research approach and methods used..."
-            rows={5}
-          />
-          {errors.methodology && (
-            <p className="text-sm text-destructive">{errors.methodology.message}</p>
-          )}
-        </div>
+        <MarkdownEditor
+          id="methodology"
+          label="Content"
+          value={watch('methodology') || ''}
+          onChange={(value) => setValue('methodology', value)}
+          placeholder="Describe the research approach and methods used..."
+          required
+          error={errors.methodology?.message}
+          minHeight={250}
+        />
       </div>
 
       {/* Methods Used */}
@@ -393,18 +405,16 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
             placeholder="Key Findings & Insights"
           />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="findings">Content *</Label>
-          <Textarea
-            id="findings"
-            {...register('findings')}
-            placeholder="What did you discover? What were the key insights?"
-            rows={5}
-          />
-          {errors.findings && (
-            <p className="text-sm text-destructive">{errors.findings.message}</p>
-          )}
-        </div>
+        <MarkdownEditor
+          id="findings"
+          label="Content"
+          value={watch('findings') || ''}
+          onChange={(value) => setValue('findings', value)}
+          placeholder="What did you discover? What were the key insights?"
+          required
+          error={errors.findings?.message}
+          minHeight={250}
+        />
       </div>
 
       {/* Impact */}
@@ -419,18 +429,16 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
             placeholder="Impact & Outcomes"
           />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="impact">Content *</Label>
-          <Textarea
-            id="impact"
-            {...register('impact')}
-            placeholder="What was the impact of this research? How was it used?"
-            rows={4}
-          />
-          {errors.impact && (
-            <p className="text-sm text-destructive">{errors.impact.message}</p>
-          )}
-        </div>
+        <MarkdownEditor
+          id="impact"
+          label="Content"
+          value={watch('impact') || ''}
+          onChange={(value) => setValue('impact', value)}
+          placeholder="What was the impact of this research? How was it used?"
+          required
+          error={errors.impact?.message}
+          minHeight={200}
+        />
       </div>
 
       {/* Links */}
@@ -590,6 +598,19 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
             onCheckedChange={(checked) => setValue('published', checked)}
           />
         </div>
+      </div>
+
+      {/* Published Date */}
+      <div>
+        <Label htmlFor="publishedAt">Published Date (optional)</Label>
+        <Input
+          id="publishedAt"
+          type="datetime-local"
+          {...register('publishedAt')}
+        />
+        <p className="text-xs text-muted-foreground mt-1">
+          Set a custom publication date. Leave empty to use creation date.
+        </p>
       </div>
 
       {/* Actions */}
