@@ -242,7 +242,7 @@ export class ProjectService {
             contentId: newProject.id,
             title: newProject.title,
             excerpt: newProject.overview,
-            date: newProject.createdAt,
+            date: newProject.publishedAt || newProject.createdAt,
             url: `/projects/${newProject.slug}`,
             tags: tags.map((t) => t.name),
           },
@@ -372,6 +372,7 @@ export class ProjectService {
           title: updated.title,
           excerpt: updated.overview,
           url: `/projects/${updated.slug}`,
+          date: updated.publishedAt || updated.createdAt,
         },
       });
 
