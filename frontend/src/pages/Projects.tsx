@@ -61,38 +61,38 @@ const Projects = () => {
                 A collection of my favorite projects.
               </h1>
               <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-xl">
-                Case studies showcasing methodologies, insights, and measurable impact across industries. Each project represents discovery-driven approaches that inform better decisions and user experiences.
+                Case studies showcasing methodologies, insights, and measurable impact across industries.
               </p>
             </div>
 
             {/* Right: Floating Expertise Panel */}
             <div className="relative lg:relative flex justify-center lg:justify-end">
               <div className="bg-secondary dark:bg-secondary rounded-2xl p-8 md:p-10 max-w-sm w-full">
-                <p className="text-xs font-semibold text-foreground uppercase tracking-widest mb-8">Expertise</p>
+                <p className="text-md font-semibold text-foreground uppercase tracking-widest mb-8">My Expertise</p>
 
-                <div className="space-y-8">
+                <div className="space-y-6">
                   {/* Expertise Item 1: Industries Covered */}
                   <div>
-                    <p className="text-2xl md:text-3xl font-bold text-foreground mb-2">Industries</p>
-                    <p className="text-sm text-foreground/70 font-medium">
-                      {industries.length || '—'}
-                    </p>
+                    <p className="text-xl md:text-2xl font-bold text-foreground mb-3">Industries</p>
+                    <div className="flex flex-wrap gap-2">
+                      {['Cloud Technology', 'AI & Machine Learning', 'Enterprise Software', 'Developer Tools'].map((item) => (
+                        <Badge key={item} variant="secondary" className="text-sm font-medium py-1 px-3 bg-foreground/10 hover:bg-foreground/20 transition-colors">
+                          {item}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
 
                   {/* Expertise Item 2: Research Types */}
-                  <div className="pt-6 border-t-2 border-foreground/20">
-                    <p className="text-2xl md:text-3xl font-bold text-foreground mb-2">Research Types</p>
-                    <p className="text-sm text-foreground/70 font-medium">
-                      {researchTypes.length || '—'}
-                    </p>
-                  </div>
-
-                  {/* Expertise Item 3: Total Projects */}
-                  <div className="pt-6 border-t-2 border-foreground/20">
-                    <p className="text-2xl md:text-3xl font-bold text-foreground mb-2">Projects</p>
-                    <p className="text-sm text-foreground/70 font-medium">
-                      {projects.length || '—'}
-                    </p>
+                  <div className="pt-4 border-t-2 border-foreground/20">
+                    <p className="text-xl md:text-2xl font-bold text-foreground mb-3">Research Methods</p>
+                    <div className="flex flex-wrap gap-2">
+                      {['User Interviews', 'Usability/Concept Testing', 'Surveys & Data Analysis', 'Generative AI Evaluations'].map((item) => (
+                        <Badge key={item} variant="secondary" className="text-sm font-medium py-1 px-3 bg-foreground/10 hover:bg-foreground/20 transition-colors">
+                          {item}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -101,84 +101,6 @@ const Projects = () => {
         </div>
       </section>
 
-      {/* Filters Section */}
-      <section className="py-8 px-4 border-b">
-        <div className="container mx-auto max-w-5xl">
-          <div className="flex flex-col md:flex-row gap-4">
-            {/* Search */}
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                type="text"
-                placeholder="Search projects..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-
-            {/* Research Type Filter */}
-            <Select value={researchType} onValueChange={setResearchType}>
-              <SelectTrigger className="w-full md:w-[200px]">
-                <Filter className="h-4 w-4 mr-2" />
-                <SelectValue placeholder="Research Type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                {researchTypes.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {type.replace('_', ' ')}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* Industry Filter */}
-            <Select value={industry} onValueChange={setIndustry}>
-              <SelectTrigger className="w-full md:w-[200px]">
-                <Filter className="h-4 w-4 mr-2" />
-                <SelectValue placeholder="Industry" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Industries</SelectItem>
-                {industries.map((ind) => (
-                  <SelectItem key={ind} value={ind!}>
-                    {ind}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* Clear Filters */}
-            {(searchQuery || researchType || industry) && (
-              <Button variant="outline" onClick={handleClearFilters}>
-                Clear
-              </Button>
-            )}
-          </div>
-
-          {/* Active Filters Display */}
-          {(searchQuery || researchType || industry) && (
-            <div className="flex flex-wrap gap-2 mt-4">
-              {searchQuery && (
-                <Badge variant="secondary">
-                  Search: {searchQuery}
-                </Badge>
-              )}
-              {researchType && (
-                <Badge variant="secondary">
-                  {researchType.replace('_', ' ')}
-                </Badge>
-              )}
-              {industry && (
-                <Badge variant="secondary">
-                  {industry}
-                </Badge>
-              )}
-            </div>
-          )}
-        </div>
-      </section>
 
       {/* Projects Grid */}
       <section className="py-16 px-4">
