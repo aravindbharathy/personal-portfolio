@@ -2,14 +2,18 @@
 title: Projects CRUD Specification
 type: Feature Specification
 status: Implemented
-version: 1.0
+version: 1.2
 created: 2025-11-21
-updated: 2025-11-21
+updated: 2025-12-10
 owner: Development Team
 related:
   - feature: 02-what/features/projects.md
   - implementation: 03-how/implementation/projects-api.impl.md
   - adr: 03-how/architecture/ADR-002-prisma-orm.md
+changelog:
+  - v1.2 (2025-12-10): Added coverImage and order fields for grid display
+  - v1.1 (2025-12-09): Added custom section headings
+  - v1.0 (2025-11-21): Initial specification
 ---
 
 # Projects CRUD Specification
@@ -53,15 +57,28 @@ interface Project {
   methodology: string;         // Required, 50-10000 chars
   findings: string;            // Required, 50-10000 chars
   impact: string;              // Required, 50-5000 chars
+
+  // Custom section headings (optional)
+  objectivesHeading: string;   // Default: "Research Objectives"
+  methodologyHeading: string;  // Default: "Methodology & Approach"
+  findingsHeading: string;     // Default: "Key Findings & Insights"
+  impactHeading: string;       // Default: "Impact & Outcomes"
+
+  coverImage: string | null;   // Optional, URL for grid display
   visuals: Json | null;        // Optional, legacy field
-  timeframe: string;           // Required, e.g., "3 months", "Q1 2024"
-  role: string;                // Required, e.g., "Lead Researcher"
+  timeframe: string | null;    // Optional, e.g., "3 months", "Q1 2024"
+  duration: string | null;     // Optional, e.g., "3 months"
+  role: string | null;         // Optional, e.g., "Lead Researcher"
+  teamSize: string | null;     // Optional, e.g., "5 people"
+  participants: string | null; // Optional, e.g., "20 users"
   researchType: ResearchType;  // Enum: FOUNDATIONAL | EVALUATIVE | GENERATIVE | MIXED
   industry: string | null;     // Optional, e.g., "Healthcare", "E-commerce"
   methodsUsed: Json;           // Array of strings, e.g., ["Usability Testing", "Interviews"]
+  links: Json | null;          // Optional, array of {title, url}
   featured: boolean;           // Default: false
   published: boolean;          // Default: false
-  order: number;               // Display order, default: 0
+  publishedAt: DateTime | null;// Auto-set when published
+  order: number;               // Display order for grid, default: 0
   createdAt: DateTime;         // Auto
   updatedAt: DateTime;         // Auto
   authorId: string;            // Foreign key to User
@@ -70,6 +87,7 @@ interface Project {
   author: User;
   tags: ProjectTag[];          // Many-to-many
   images: ProjectImage[];      // One-to-many
+  pictureGrids: ProjectPictureGrid[];  // One-to-many
 }
 
 interface ProjectImage {
@@ -252,6 +270,36 @@ interface ProjectTag {
 
 **Response:** Updated project object
 
+## UI/UX Requirements
+
+### Grid Display Layout
+The projects page displays projects in a responsive grid layout optimized for visual browsing:
+
+**Grid Responsiveness:**
+- Mobile (< 768px): 1 column
+- Tablet (768px - 1024px): 2 columns
+- Desktop (> 1024px): 3 columns
+
+**Card Structure:**
+- Cover image with 4:3 aspect ratio
+- Hover effect: Scale image by 105% with smooth transition
+- Fallback display: Gradient background with first letter of title when no cover image
+- Industry label (small caps, muted color)
+- Full project title (no truncation)
+- Full overview text (no line clamping)
+- Metadata footer: Research type icon + duration
+
+**Cover Image:**
+- Stored as URL in `coverImage` field
+- Displayed with `object-cover` for consistent aspect ratio
+- If null/missing, show gradient fallback with first letter of title
+- Featured badge overlays top-right corner if `featured=true`
+
+**Display Order:**
+- Primary sort: `order` field (ascending) - allows manual positioning
+- Secondary sort: `createdAt` (descending) - newest first for same order values
+- Admin can set order value (0, 1, 2, etc.) to control position in grid
+
 ## Business Rules
 
 ### Slug Generation
@@ -260,7 +308,7 @@ interface ProjectTag {
 - Replace spaces with hyphens
 - Remove special characters
 - Ensure uniqueness (append number if needed)
-- Example: "UX Research Project!" ’ "ux-research-project"
+- Example: "UX Research Project!" ï¿½ "ux-research-project"
 
 ### Publishing Rules
 - Draft projects (published=false) only visible to admin
@@ -286,12 +334,15 @@ interface ProjectTag {
 
 ## Acceptance Criteria
 
-### AC1: Public can browse published projects
+### AC1: Public can browse published projects in grid layout
 **Given** a visitor on the projects page
 **When** they load the page
-**Then** they see only published projects
-**And** projects are sorted by custom order (or date)
-**And** featured projects appear at the top
+**Then** they see only published projects in a responsive grid layout
+**And** projects display cover images (or fallback gradient with first letter)
+**And** projects are sorted by order field (ascending), then by createdAt (descending)
+**And** grid displays 1 column on mobile, 2 on tablet, 3 on desktop
+**And** cards show full title and description text without truncation
+**And** hover effects scale the cover image
 
 ### AC2: Public can filter projects
 **Given** a visitor viewing projects
