@@ -32,6 +32,7 @@ export interface Project {
   findingsHeading?: string;
   impactHeading?: string;
 
+  coverImage?: string;
   timeframe?: string;
   duration?: string;
   role?: string;
@@ -43,6 +44,7 @@ export interface Project {
   featured: boolean;
   published: boolean;
   publishedAt?: string;
+  order: number;
   createdAt: string;
   updatedAt: string;
   tags: Array<{ tag: { id: string; name: string; slug: string } }>;

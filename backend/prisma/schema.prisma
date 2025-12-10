@@ -80,6 +80,7 @@ model Project {
   findingsHeading    String @default("Key Findings & Insights")
   impactHeading      String @default("Impact & Outcomes")
 
+  coverImage   String? // URL to cover image for grid display
   visuals      Json? // Store references to images/artifacts
   links        Json? // Array of related links
   timeframe    String?

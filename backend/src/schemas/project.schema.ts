@@ -51,6 +51,7 @@ export const createProjectSchema = z.object({
   findingsHeading: z.string().min(1).max(100).optional(),
   impactHeading: z.string().min(1).max(100).optional(),
 
+  coverImage: z.string().url('Invalid cover image URL').optional(),
   timeframe: z.string().min(1).max(100).optional(),
   duration: z.string().optional(),
   role: z.string().optional(),
@@ -62,6 +63,7 @@ export const createProjectSchema = z.object({
   featured: z.boolean().default(false),
   published: z.boolean().default(false),
   publishedAt: z.string().datetime().optional(),
+  order: z.number().int().min(0).default(0),
   tagIds: z.array(z.string()),
   images: z.array(projectImageSchema).optional(),
   links: z.array(projectLinkSchema).optional(),

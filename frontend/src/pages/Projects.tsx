@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { useProjects } from "@/hooks/useProjects";
 import { Link } from "react-router-dom";
-import { Search, Filter, Calendar, Tag } from "lucide-react";
+import { Search, Filter, Tag } from "lucide-react";
 
 const Projects = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -28,7 +28,13 @@ const Projects = () => {
     published: 'true'
   });
 
-  const projects = data || [];
+  // Sort projects by order field (ascending), then by createdAt (descending)
+  const projects = (data || []).sort((a, b) => {
+    if (a.order !== b.order) {
+      return a.order - b.order;
+    }
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
 
   // Extract unique industries and research types for filters
   const industries = [...new Set(projects.map(p => p.industry).filter(Boolean))];
@@ -51,8 +57,8 @@ const Projects = () => {
             {/* Left: Title & Subtitle */}
             <div className="pt-12 lg:pt-0">
               <p className="text-sm font-semibold text-primary mb-4 uppercase tracking-wide">Research Work</p>
-              <h1 className="text-5xl lg:text-6xl font-light leading-tight text-foreground mb-8">
-                User research that drives transformation
+              <h1 className="text-5xl lg:text-5xl font-light leading-tight text-foreground mb-8">
+                A collection of my favorite projects.
               </h1>
               <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-xl">
                 Case studies showcasing methodologies, insights, and measurable impact across industries. Each project represents discovery-driven approaches that inform better decisions and user experiences.
@@ -176,7 +182,7 @@ const Projects = () => {
 
       {/* Projects Grid */}
       <section className="py-16 px-4">
-        <div className="container mx-auto max-w-5xl">
+        <div className="container mx-auto max-w-7xl">
           {isLoading ? (
             <div className="flex justify-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -192,78 +198,65 @@ const Projects = () => {
               </CardContent>
             </Card>
           ) : (
-            <div className="grid gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {projects.map((project) => (
-                <Link key={project.id} to={`/projects/${project.slug}`}>
-                  <Card className="hover:shadow-lg transition-shadow group">
-                    <CardHeader>
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                          <CardTitle className="text-2xl mb-2 group-hover:text-primary transition-colors">
-                            {project.title}
-                          </CardTitle>
-                          <p className="text-muted-foreground line-clamp-2">
-                            {project.overview}
-                          </p>
+                <Link key={project.id} to={`/projects/${project.slug}`} className="group">
+                  <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+                    {/* Cover Image */}
+                    <div className="relative aspect-[4/3] bg-muted overflow-hidden">
+                      {project.coverImage ? (
+                        <img
+                          src={project.coverImage}
+                          alt={project.title}
+                          className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
+                          <div className="text-center p-6">
+                            <p className="text-2xl font-light text-muted-foreground">{project.title.charAt(0)}</p>
+                          </div>
                         </div>
-                        {project.featured && (
-                          <Badge variant="default">Featured</Badge>
+                      )}
+                      {project.featured && (
+                        <div className="absolute top-4 right-4">
+                          <Badge variant="default" className="shadow-lg">Featured</Badge>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Card Content */}
+                    <div className="flex-1 flex flex-col p-6">
+                      {/* Client/Industry */}
+                      {project.industry && (
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                          {project.industry}
+                        </p>
+                      )}
+
+                      {/* Title */}
+                      <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors">
+                        {project.title}
+                      </h3>
+
+                      {/* Description */}
+                      <p className="text-sm text-muted-foreground mb-4 flex-1">
+                        {project.overview}
+                      </p>
+
+                      {/* Metadata */}
+                      <div className="flex flex-wrap gap-2 text-xs text-muted-foreground border-t pt-4">
+                        <div className="flex items-center gap-1">
+                          <Tag className="h-3 w-3" />
+                          <span>{project.researchType.replace('_', ' ')}</span>
+                        </div>
+                        {project.duration && (
+                          <>
+                            <span>•</span>
+                            <span>{project.duration}</span>
+                          </>
                         )}
                       </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        {/* Metadata */}
-                        <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <Tag className="h-4 w-4" />
-                            <span>{project.researchType.replace('_', ' ')}</span>
-                          </div>
-                          {project.industry && (
-                            <div className="flex items-center gap-1">
-                              <span>•</span>
-                              <span>{project.industry}</span>
-                            </div>
-                          )}
-                          {project.duration && (
-                            <div className="flex items-center gap-1">
-                              <Calendar className="h-4 w-4" />
-                              <span>{project.duration}</span>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Tags */}
-                        {project.tags && project.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-2">
-                            {project.tags.slice(0, 5).map((tagRel) => (
-                              <Badge key={tagRel.tag.id} variant="outline" className="text-xs">
-                                {tagRel.tag.name}
-                              </Badge>
-                            ))}
-                            {project.tags.length > 5 && (
-                              <Badge variant="outline" className="text-xs">
-                                +{project.tags.length - 5} more
-                              </Badge>
-                            )}
-                          </div>
-                        )}
-
-                        {/* Key Highlights */}
-                        {project.methodsUsed && Array.isArray(project.methodsUsed) && project.methodsUsed.length > 0 && (
-                          <div className="pt-2 border-t">
-                            <p className="text-sm font-medium mb-2">Methods Used:</p>
-                            <div className="flex flex-wrap gap-2">
-                              {project.methodsUsed.slice(0, 4).map((method: string, idx: number) => (
-                                <Badge key={idx} variant="secondary" className="text-xs">
-                                  {method}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </CardContent>
+                    </div>
                   </Card>
                 </Link>
               ))}

@@ -36,12 +36,14 @@ const projectSchema = z.object({
   findingsHeading: z.string().min(1).max(100).optional(),
   impactHeading: z.string().min(1).max(100).optional(),
 
+  coverImage: z.string().url('Must be a valid URL').optional().or(z.literal('')),
   researchType: z.enum(['FOUNDATIONAL', 'EVALUATIVE', 'GENERATIVE', 'MIXED']),
   industry: z.string().optional(),
   duration: z.string().optional(),
   role: z.string().optional(),
   teamSize: z.string().optional(),
   participants: z.string().optional(),
+  order: z.coerce.number().int().min(0).default(0),
   featured: z.boolean().default(false),
   published: z.boolean().default(false),
   publishedAt: z.string().optional(),
@@ -100,12 +102,14 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
           methodologyHeading: project.methodologyHeading || 'Methodology & Approach',
           findingsHeading: project.findingsHeading || 'Key Findings & Insights',
           impactHeading: project.impactHeading || 'Impact & Outcomes',
+          coverImage: project.coverImage || '',
           researchType: project.researchType,
           industry: project.industry || '',
           duration: project.duration || '',
           role: project.role || '',
           teamSize: project.teamSize || '',
           participants: project.participants || '',
+          order: project.order || 0,
           featured: project.featured,
           published: project.published,
           publishedAt: toDateTimeLocal(project.publishedAt),
@@ -115,6 +119,8 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
           methodologyHeading: 'Methodology & Approach',
           findingsHeading: 'Key Findings & Insights',
           impactHeading: 'Impact & Outcomes',
+          coverImage: '',
+          order: 0,
           featured: false,
           published: false,
           publishedAt: '',
@@ -156,6 +162,7 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
         findingsHeading: data.findingsHeading?.trim() || undefined,
         impactHeading: data.impactHeading?.trim() || undefined,
         // Only include optional metadata fields if they have values
+        coverImage: data.coverImage?.trim() || undefined,
         duration: data.duration?.trim() || undefined,
         role: data.role?.trim() || undefined,
         teamSize: data.teamSize?.trim() || undefined,
@@ -266,6 +273,23 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
         )}
       </div>
 
+      {/* Cover Image */}
+      <div className="space-y-2">
+        <Label htmlFor="coverImage">Cover Image URL</Label>
+        <Input
+          id="coverImage"
+          {...register('coverImage')}
+          placeholder="https://example.com/image.jpg"
+          type="url"
+        />
+        <p className="text-xs text-muted-foreground">
+          Enter the URL of the cover image to display on the projects grid page
+        </p>
+        {errors.coverImage && (
+          <p className="text-sm text-destructive">{errors.coverImage.message}</p>
+        )}
+      </div>
+
       {/* Metadata Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
@@ -311,6 +335,24 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
             placeholder="e.g., 20 users"
           />
         </div>
+      </div>
+
+      {/* Display Order */}
+      <div className="space-y-2">
+        <Label htmlFor="order">Display Order</Label>
+        <Input
+          id="order"
+          type="number"
+          min="0"
+          {...register('order')}
+          placeholder="0"
+        />
+        <p className="text-xs text-muted-foreground">
+          Control the position of this project in the grid. Lower numbers appear first (0, 1, 2, etc.)
+        </p>
+        {errors.order && (
+          <p className="text-sm text-destructive">{errors.order.message}</p>
+        )}
       </div>
 
       {/* Objectives */}

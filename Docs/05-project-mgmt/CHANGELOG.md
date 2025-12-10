@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2025-12-10
+
+### Added
+- Project grid display with cover images on projects page
+- `coverImage` field to Project model for storing cover image URLs
+- `order` field to Project model for controlling project display order
+- Display order input field in admin project form
+- Cover image URL input field in admin project form
+- Responsive 3-column grid layout (1 col mobile, 2 col tablet, 3 col desktop)
+- Full-height cards with hover effects and image scaling
+- Fallback gradient display with first letter when no cover image is provided
+
+### Changed
+- Projects page layout from list view to grid view
+- Removed line clamping from project titles and descriptions to show full text
+- Updated project schema validation to include coverImage and order fields
+- Projects now sort by order (ascending), then by createdAt (descending)
+
+### Database
+- Migration: `20251210140705_add_project_cover_image` - Added coverImage field to Project table
+- Regenerated Prisma client to include new fields
+
+### Frontend
+- Updated `frontend/src/pages/Projects.tsx` - Grid layout with cover images
+- Updated `frontend/src/hooks/useProjects.ts` - Added coverImage and order to Project interface
+- Updated `frontend/src/components/admin/ProjectForm.tsx` - Added coverImage and order fields
+
+### Backend
+- Updated `backend/prisma/schema.prisma` - Added coverImage field
+- Updated `backend/src/schemas/project.schema.ts` - Added coverImage and order validation
+
+---
+
 ## [1.1.0] - 2025-12-10
 
 ### Added
