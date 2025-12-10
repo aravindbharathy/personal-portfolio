@@ -133,14 +133,18 @@ portfolio/
 - 📘 **[Getting Started Guide](./Docs/guides/getting-started.md)** - Quick start in 5 minutes
 - 🏗️ **[System Architecture](./Docs/architecture/system-architecture.md)** - System design with Mermaid diagrams
 - 🗄️ **[Database Schema](./Docs/architecture/database-schema.md)** - Complete ERD and data model
-- 🚀 **[Deployment Guide](./Docs/guides/deployment.md)** - Production deployment instructions
+- 🚀 **[GCP Deployment](./Docs/03-how/implementation/deployment/gcp-deployment.impl.md)** - Production deployment on Google Cloud
+- 📋 **[Production Update Workflow](./Docs/03-how/implementation/deployment/production-update-workflow.md)** - Safe update process
 
 ### All Documentation
 - **[Documentation Hub](./Docs/architecture/README.md)** - Complete documentation index
+- **[Documentation Framework](./documentation-framework.md)** - How we organize documentation
 - **[API Reference](./Docs/reference/api-endpoints.md)** - All 34 endpoints documented
 - **[Backend Setup](./Docs/guides/backend-setup.md)** - Folder structure and configuration
 - **[Implementation Guide](./Docs/guides/implementation-guide.md)** - Implementation checklist
 - **[Vision Document](./Docs/What/vision.md)** - Product requirements and goals
+- **[Deployment Scripts](./Docs/scripts/README.md)** - Automated deployment scripts
+- **[CHANGELOG](./Docs/05-project-mgmt/CHANGELOG.md)** - Version history and changes
 
 ## Local Development
 
@@ -218,7 +222,36 @@ Password: changethispassword
 
 ## Deployment
 
-### Vercel (Recommended)
+### Production (Google Cloud Platform) - ✅ DEPLOYED
+
+**Current Production:**
+- **Backend**: `portfolio-backend-00017-7v7` (Cloud Run)
+- **Frontend**: `portfolio-frontend-00002-qxk` (Cloud Run)
+- **Database**: Cloud SQL PostgreSQL
+- **Status**: Live at https://aravindbharathy.com
+
+**Quick Deployment Commands:**
+
+```bash
+# Full deployment (backend + frontend)
+./Docs/scripts/deploy-all.sh all
+
+# Backend only
+./Docs/scripts/deploy-backend.sh
+
+# Frontend only
+./Docs/scripts/deploy-frontend.sh
+
+# Database backup (always run before deployment)
+./Docs/scripts/backup-production-db.sh
+```
+
+**Deployment Documentation:**
+- 📖 **[GCP Deployment Implementation](./Docs/03-how/implementation/deployment/gcp-deployment.impl.md)** - Complete infrastructure details
+- 📖 **[Production Update Workflow](./Docs/03-how/implementation/deployment/production-update-workflow.md)** - Safe update process
+- 📖 **[Deployment Scripts README](./Docs/scripts/README.md)** - Script usage and troubleshooting
+
+### Alternative: Vercel
 
 ```bash
 # Install Vercel CLI
@@ -237,7 +270,7 @@ cd frontend && vercel --prod
 3. Update `ALLOWED_ORIGINS` to include production frontend URL
 4. Connect PostgreSQL database (Vercel Postgres, Supabase, or Neon)
 
-📖 **[Complete Deployment Guide](./Docs/guides/deployment.md)**
+📖 **[Alternative Deployment Guide](./Docs/guides/deployment.md)**
 
 ## Troubleshooting
 
@@ -313,4 +346,4 @@ Private - All rights reserved
 
 **Built with ❤️ for User Research Professionals**
 
-Last Updated: 2025-01-21 | Status: Ready for Production 🚀
+Last Updated: 2025-12-10 | Status: Deployed to Production 🚀
