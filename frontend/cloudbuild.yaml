@@ -1,0 +1,11 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '--build-arg'
+      - 'VITE_API_URL=https://portfolio-backend-1017578449720.us-central1.run.app'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/personal-website-480707/portfolio-repo/frontend:latest'
+      - '.'
+images:
+  - 'us-central1-docker.pkg.dev/personal-website-480707/portfolio-repo/frontend:latest'

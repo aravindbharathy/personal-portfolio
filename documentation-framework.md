@@ -218,14 +218,37 @@ Code snippets showing integration
 ```
 
 **When Something Is Implementation Doc:**
-✅ Describes code structure  
-✅ Explains technical approach  
-✅ References actual files/modules  
-✅ Helps developers navigate codebase  
+✅ Describes code structure
+✅ Explains technical approach
+✅ References actual files/modules
+✅ Helps developers navigate codebase
 
 **Examples:**
 - `brutal-analysis.impl.md` - AST parsing, 12 analyzers, grading logic
 - `permission-system.impl.md` - Learning algorithm, storage format
+
+#### Deployment Documentation (03-how/implementation/deployment/)
+**Purpose:** Document infrastructure, deployment processes, and operational procedures
+
+**File Naming:** `[platform]-deployment.impl.md` or `[process]-workflow.md`
+
+**Required Sections:**
+1. **Architecture** - Infrastructure diagram and components
+2. **Current Configuration** - Production settings and environment
+3. **Deployment Process** - Step-by-step deployment procedures
+4. **Critical Issues & Solutions** - Known problems and fixes
+5. **Rollback Procedures** - Emergency recovery steps
+6. **Monitoring & Logs** - How to view logs and metrics
+
+**When to Create Deployment Doc:**
+✅ Initial infrastructure setup completed
+✅ Deployment process established
+✅ Multiple deployment targets (staging, production)
+✅ Complex infrastructure with multiple services
+
+**Examples:**
+- `gcp-deployment.impl.md` - Google Cloud Platform deployment
+- `production-update-workflow.md` - Safe production update process
 
 #### Bug Fix Documentation (03-how/implementation/bug-fixes/)
 **Purpose:** Document bug fixes with root cause analysis and solutions
@@ -499,6 +522,8 @@ We'll disrupt the market because...
 | Detailed requirements | 03-how/specs/ |
 | Technical decisions | 03-how/architecture/ |
 | Code structure | 03-how/implementation/ |
+| Deployment processes | 03-how/implementation/deployment/ |
+| Deployment scripts | scripts/ |
 | Test scenarios | 03-how/tests/ |
 | User guide | 04-guides/ |
 | Sprint planning | 05-project-mgmt/ |
