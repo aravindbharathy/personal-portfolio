@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { comparePassword, generateToken } from '@/lib/auth';
 import { loginSchema } from '@/schemas/auth.schema';
@@ -44,10 +44,12 @@ export async function POST(request: NextRequest) {
     });
 
     // Set HTTP-only cookie
+    // In production, we use sameSite: 'none' because frontend and backend are on different domains
+    // This requires secure: true (HTTPS)
     response.cookies.set('auth-token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60, // 7 days
       path: '/',
     });

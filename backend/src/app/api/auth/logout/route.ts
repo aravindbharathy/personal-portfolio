@@ -1,18 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { successResponse, errorResponse } from '@/utils/api-response';
 import { handleError } from '@/utils/error-handler';
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     const response = successResponse({
       message: 'Logged out successfully',
     });
 
-    // Clear the auth cookie
+    // Clear the auth cookie (must match the same settings as login)
     response.cookies.set('auth-token', '', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 0,
       path: '/',
     });
