@@ -2,17 +2,89 @@
 
 ## Overview
 
-This document provides comprehensive deployment strategies and configurations for the portfolio website, covering both frontend and backend deployment across various platforms.
+This document provides comprehensive deployment strategies and configurations for the portfolio website. The project is currently deployed on **Google Cloud Platform (GCP)** using Cloud Run and Cloud SQL.
+
+> **Note:** For detailed GCP deployment instructions, see:
+> - [GCP Deployment Implementation](../03-how/implementation/deployment/gcp-deployment.impl.md)
+> - [Production Update Workflow](../03-how/implementation/deployment/production-update-workflow.md)
+> - [Deployment Scripts](../scripts/README.md)
 
 ---
 
-## Deployment Options
-
-### Recommended Stack
+## Current Production Architecture (GCP)
 
 ```
 ┌─────────────────────────────────────────────┐
-│           Production Architecture            │
+│       Production Architecture (GCP)         │
+└─────────────────────────────────────────────┘
+
+Domain: aravindbharathy.com
+       │
+       ├─> Cloud Run (Frontend)
+       │   └─ portfolio-frontend-1017578449720.us-central1.run.app
+       │      ├─ Docker Container (Vite/React)
+       │      ├─ Port 8080
+       │      ├─ Build Arg: VITE_API_URL
+       │      └─ Memory: 256Mi, CPU: 1
+       │
+       └─> Cloud Run (Backend)
+           └─ portfolio-backend-1017578449720.us-central1.run.app
+              ├─ Docker Container (Next.js)
+              ├─ Port 8080
+              ├─ Connected to Cloud SQL via Unix Socket
+              ├─ Memory: 512Mi, CPU: 1
+              └─ Env: DATABASE_URL, JWT_SECRET, ALLOWED_ORIGINS
+
+Cloud SQL (PostgreSQL 15)
+└─ portfolio-db (us-central1)
+   ├─ Instance: personal-website-480707:us-central1:portfolio-db
+   ├─ Connection: Unix Socket (/cloudsql/...)
+   ├─ Database: portfolio
+   └─ User: postgres
+
+Artifact Registry
+└─ portfolio-repo (us-central1)
+   ├─ backend:latest
+   └─ frontend:latest
+
+Secret Manager
+├─ jwt-secret
+└─ db-password
+```
+
+### Quick Start (GCP)
+
+**Deploy Backend:**
+```bash
+./Docs/scripts/deploy-backend.sh
+```
+
+**Deploy Frontend:**
+```bash
+./Docs/scripts/deploy-frontend.sh
+```
+
+**Run Production Migrations:**
+```bash
+./Docs/scripts/run-prod-migrations.sh
+```
+
+**Complete Deployment:**
+```bash
+./Docs/scripts/deploy-all.sh
+```
+
+---
+
+## Alternative Deployment Options
+
+The sections below describe alternative deployment platforms. These are not currently in use but may be useful for future migrations or testing.
+
+### Alternative Stack Options
+
+```
+┌─────────────────────────────────────────────┐
+│        Alternative Architectures            │
 └─────────────────────────────────────────────┘
 
 Frontend (React/Vite)
@@ -39,7 +111,157 @@ File Storage
 
 ---
 
-## Option 1: Vercel (Recommended)
+## Google Cloud Platform (Current Production)
+
+### Why GCP?
+
+- Full control over infrastructure
+- Cloud Run for serverless containers
+- Cloud SQL for managed PostgreSQL
+- Integrated Secret Manager
+- Docker-based deployments
+- Cost-effective for current scale
+
+### Prerequisites
+
+1. **Install Google Cloud SDK:**
+```bash
+# macOS
+brew install --cask google-cloud-sdk
+
+# Initialize
+gcloud init
+```
+
+2. **Authenticate:**
+```bash
+gcloud auth login
+gcloud config set project personal-website-480707
+```
+
+3. **Install Cloud SQL Proxy:**
+```bash
+# macOS
+brew install cloud-sql-proxy
+```
+
+### Deployment Scripts
+
+The project includes automated deployment scripts in `Docs/scripts/`:
+
+**Backend Deployment:**
+- Pre-deployment migration count check with warnings
+- Automatic build and push to Artifact Registry
+- Deploy to Cloud Run with environment variables
+- Post-deployment API testing to detect migration failures
+- Clear error messages with actionable steps
+
+**Frontend Deployment:**
+- Build with VITE_API_URL injected at build time
+- Push to Artifact Registry
+- Deploy to Cloud Run
+- Health check verification
+
+**Migration Helper:**
+- Automatic Cloud SQL proxy management
+- Secure password prompting
+- Migration execution and verification
+- Proper cleanup
+
+### Database Migrations (Important)
+
+**Automatic Migration (on container startup):**
+
+Migrations run automatically via the Dockerfile CMD:
+```dockerfile
+CMD ["sh", "-c", "npx prisma migrate deploy || true && node server.js"]
+```
+
+**Critical Issue:** The `|| true` allows containers to start even when migrations fail, masking errors.
+
+**Solution:** The deployment script now automatically detects migration failures by:
+1. Testing the API endpoint after deployment
+2. Looking for "does not exist in the current database" errors
+3. Providing clear instructions to run manual migrations
+
+**Manual Migration (when automatic fails):**
+```bash
+# Recommended: Use helper script
+./Docs/scripts/run-prod-migrations.sh
+
+# Or manually:
+cloud-sql-proxy personal-website-480707:us-central1:portfolio-db --port=5433 &
+cd backend
+DATABASE_URL="postgresql://postgres:PASSWORD@localhost:5433/portfolio" \
+  npx prisma migrate deploy
+```
+
+**Best Practices:**
+- Always verify migrations after deployment
+- Test migrations on local copy of production data first
+- Keep database backup until verified working
+- Monitor API immediately after deployment
+
+### Environment Variables (GCP)
+
+**Backend (Cloud Run):**
+```yaml
+DATABASE_URL: "postgresql://postgres:%40Atr2xLtdda9EfdsXdky@localhost/portfolio?host=/cloudsql/personal-website-480707:us-central1:portfolio-db"
+JWT_SECRET: (from Secret Manager)
+ALLOWED_ORIGINS: "https://portfolio-frontend-1017578449720.us-central1.run.app,https://aravindbharathy.com"
+```
+
+**Frontend (Build time):**
+```yaml
+VITE_API_URL: "https://portfolio-backend-1017578449720.us-central1.run.app"
+```
+
+### Monitoring & Troubleshooting (GCP)
+
+**View Logs:**
+```bash
+# Backend logs
+gcloud logging read \
+  "resource.type=cloud_run_revision AND resource.labels.service_name=portfolio-backend" \
+  --limit 50
+
+# Frontend logs
+gcloud logging read \
+  "resource.type=cloud_run_revision AND resource.labels.service_name=portfolio-frontend" \
+  --limit 50
+```
+
+**Common Issues:**
+1. **Migration failures:** Run `./Docs/scripts/run-prod-migrations.sh`
+2. **CORS errors:** Update ALLOWED_ORIGINS environment variable
+3. **Database connection:** Check Cloud SQL instance is running and connection string is correct
+
+**Rollback:**
+```bash
+# List revisions
+gcloud run revisions list --service=portfolio-backend --region=us-central1
+
+# Route traffic to previous revision
+gcloud run services update-traffic portfolio-backend \
+  --to-revisions=[PREVIOUS_REVISION]=100 \
+  --region=us-central1
+```
+
+### Cost (GCP Current Usage)
+
+- **Cloud Run:** Pay per use, ~$0-5/month with min-instances=0
+- **Cloud SQL:** db-f1-micro tier, ~$10/month
+- **Artifact Registry:** Storage for 2 images, ~$1/month
+- **Cloud Build:** 120 free builds/day (sufficient)
+- **Total:** ~$11-16/month
+
+---
+
+## Alternative Platforms
+
+The following sections describe alternative deployment options that are not currently in use.
+
+## Option 1: Vercel
 
 ### Why Vercel?
 
