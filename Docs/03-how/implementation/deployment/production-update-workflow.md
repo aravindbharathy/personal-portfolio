@@ -173,20 +173,55 @@ gcloud builds list --ongoing
 gcloud builds log [BUILD_ID]
 ```
 
-**3.2 Run Database Migrations** (if schema changed)
+**3.2 Verify Database Migrations** (if schema changed)
 
-Migrations run automatically on backend startup via:
+Migrations are designed to run automatically on backend startup via:
 ```dockerfile
 CMD ["sh", "-c", "npx prisma migrate deploy || true && node server.js"]
 ```
 
-Verify migrations succeeded:
+**IMPORTANT**: The `|| true` in the CMD allows the container to start even if migrations fail. You MUST verify migrations succeeded after deployment.
+
+**Verification Steps**:
 ```bash
-# Check logs for migration output
+# Step 1: Wait for container startup (10 seconds)
+sleep 10
+
+# Step 2: Test API endpoint to detect migration failures
+curl https://portfolio-backend-1017578449720.us-central1.run.app/api/projects
+
+# Step 3: Check for error messages
+# If you see "does not exist in the current database", migrations FAILED
+
+# Step 4: Check logs for migration output
 gcloud logging read \
   "resource.type=cloud_run_revision AND resource.labels.service_name=portfolio-backend AND textPayload=~\"Migration\"" \
-  --limit 10
+  --limit 20 \
+  --format json
 ```
+
+**If Migrations Failed**:
+```bash
+# Option 1: Use helper script (recommended)
+./Docs/scripts/run-prod-migrations.sh
+
+# Option 2: Manual migration
+# Start Cloud SQL proxy
+cloud-sql-proxy personal-website-480707:us-central1:portfolio-db --port=5433 &
+
+# Run migrations
+cd backend
+DATABASE_URL="postgresql://postgres:@Atr2xLtdda9EfdsXdky@localhost:5433/portfolio" \
+  npx prisma migrate deploy
+
+# Verify status
+npx prisma migrate status
+
+# Test API again
+curl https://portfolio-backend-1017578449720.us-central1.run.app/api/projects
+```
+
+**Note**: The `deploy-backend.sh` script now automatically detects migration failures and provides actionable error messages.
 
 **3.3 Verify Backend Deployment**
 
@@ -413,15 +448,19 @@ PGPASSWORD="@Atr2xLtdda9EfdsXdky" psql \
 3. Backup production database
 4. Test migration on backup copy
 5. Deploy backend (migrations run automatically)
-6. Verify migrations succeeded
-7. Test data integrity
-8. Deploy frontend if needed
-9. Keep backup for 7 days
-10. Document schema changes
-11. Merge to main
+6. **CRITICAL**: Verify migrations succeeded via API test
+7. If migrations failed, run `./Docs/scripts/run-prod-migrations.sh`
+8. Test data integrity
+9. Deploy frontend if needed
+10. Keep backup for 7 days
+11. Document schema changes
+12. Merge to main
 
 **Time**: ~45 minutes
 **Risk**: High
+
+**Common Pitfall**:
+The Dockerfile's `|| true` allows containers to start even when migrations fail. Always test the API endpoint after deployment to ensure migrations ran successfully. Look for "does not exist in the current database" errors which indicate migration failure.
 
 ## Emergency Procedures
 
@@ -518,17 +557,39 @@ If data is corrupted:
 
 ### Database Migration Fails
 
-**Check**:
-1. Migration SQL syntax
-2. Database connection
-3. Schema conflicts
-4. Data constraints
+**Symptoms**:
+- API returns `500 Internal Server Error`
+- Error message contains "does not exist in the current database"
+- Logs show Prisma validation errors
 
-**Recover**:
-1. Migration fails but service starts (via `|| true`)
-2. Fix migration locally
-3. Create new migration
-4. Deploy again
+**Check**:
+1. Test API endpoint: `curl https://portfolio-backend-1017578449720.us-central1.run.app/api/projects`
+2. Check logs for migration output
+3. Review migration SQL syntax
+4. Verify database connection
+5. Check for schema conflicts
+
+**Immediate Fix**:
+```bash
+# Run manual migration using helper script
+./Docs/scripts/run-prod-migrations.sh
+
+# Verify fix
+curl https://portfolio-backend-1017578449720.us-central1.run.app/api/projects
+```
+
+**Long-term Fix**:
+1. Migration fails but service starts (via `|| true` in Dockerfile)
+2. Fix migration locally and test thoroughly
+3. Create new migration if needed
+4. Deploy again with improved migration
+5. Consider removing `|| true` to fail fast on migration errors
+
+**Prevention**:
+- Always test migrations on local copy of production data
+- Use the `deploy-backend.sh` script which detects migration failures
+- Monitor API immediately after deployment
+- Keep database backup until verified working
 
 ## Related Documentation
 

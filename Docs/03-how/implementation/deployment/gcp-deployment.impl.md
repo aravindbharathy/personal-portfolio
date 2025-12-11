@@ -240,10 +240,44 @@ PGPASSWORD="@Atr2xLtdda9EfdsXdky" psql \
 ```
 
 **Run Migrations**:
+
+Migrations are designed to run automatically during backend container startup via the Dockerfile CMD. However, if migrations fail silently (due to `|| true` in the CMD), manual intervention is required.
+
+**Automatic Migration** (on container startup):
+```dockerfile
+CMD ["sh", "-c", "npx prisma migrate deploy || true && node server.js"]
+```
+
+**Manual Migration** (when automatic fails):
 ```bash
-# Using DATABASE_URL
-DATABASE_URL="postgresql://postgres:%40Atr2xLtdda9EfdsXdky@localhost:5433/portfolio" \
+# Option 1: Using helper script (recommended)
+./Docs/scripts/run-prod-migrations.sh
+
+# Option 2: Manual steps
+# 1. Start Cloud SQL Proxy
+cloud-sql-proxy personal-website-480707:us-central1:portfolio-db --port=5433 &
+
+# 2. Run migrations
+cd backend
+DATABASE_URL="postgresql://postgres:@Atr2xLtdda9EfdsXdky@localhost:5433/portfolio" \
   npx prisma migrate deploy
+
+# 3. Verify migrations
+npx prisma migrate status
+```
+
+**Verify Migrations in Production**:
+```bash
+# Check backend logs for migration output
+gcloud logging read \
+  "resource.type=cloud_run_revision AND resource.labels.service_name=portfolio-backend AND textPayload=~\"Migration\"" \
+  --limit 20 \
+  --format json
+
+# Test API to detect migration failures
+curl https://portfolio-backend-1017578449720.us-central1.run.app/api/projects
+
+# If you see "does not exist in the current database" error, migrations failed
 ```
 
 ## Critical Deployment Issues & Solutions
@@ -499,6 +533,65 @@ gcloud builds log [BUILD_ID]
 # - TypeScript errors
 # - Prisma generation failure
 ```
+
+**4. Database Migration Failures**
+
+**Symptoms**:
+- Backend API returns `500 Internal Server Error`
+- Error message: `"The column 'Project.coverImage' does not exist in the current database"`
+- Logs show: `Invalid 'prisma.project.findMany()' invocation`
+
+**Root Cause**:
+Migrations are configured to run automatically via `npx prisma migrate deploy || true` in the Dockerfile CMD. The `|| true` allows the container to start even if migrations fail, masking migration errors.
+
+**Detection**:
+```bash
+# Test API endpoint
+curl https://portfolio-backend-1017578449720.us-central1.run.app/api/projects
+
+# If response contains "does not exist in the current database", migrations failed
+
+# Check logs for migration output
+gcloud logging read \
+  "resource.type=cloud_run_revision AND resource.labels.service_name=portfolio-backend AND textPayload=~\"prisma\"" \
+  --limit 30
+```
+
+**Solution**:
+```bash
+# 1. Run the migration helper script
+./Docs/scripts/run-prod-migrations.sh
+
+# 2. Or manually run migrations:
+# Start Cloud SQL proxy
+cloud-sql-proxy personal-website-480707:us-central1:portfolio-db --port=5433 &
+
+# Run migrations from backend directory
+cd backend
+DATABASE_URL="postgresql://postgres:@Atr2xLtdda9EfdsXdky@localhost:5433/portfolio" \
+  npx prisma migrate deploy
+
+# Verify migration status
+npx prisma migrate status
+
+# 3. Test API again
+curl https://portfolio-backend-1017578449720.us-central1.run.app/api/projects
+```
+
+**Prevention**:
+The `deploy-backend.sh` script now includes:
+- Pre-deployment migration count check with warnings
+- Post-deployment API testing to detect migration failures
+- Clear error messages with actionable steps
+- Reference to helper script for manual migration
+
+**Best Practice**:
+After deploying backend with schema changes:
+1. Wait 10 seconds for container startup
+2. Test API endpoint immediately
+3. Check for "does not exist" errors
+4. Run manual migrations if needed
+5. Keep database backup until verified working
 
 ## References
 
