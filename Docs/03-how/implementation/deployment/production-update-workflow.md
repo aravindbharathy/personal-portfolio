@@ -94,11 +94,25 @@ git commit -m "feat: description of changes"
 
 **2.1 Backup Production Database**
 ```bash
+# CRITICAL: Production is the source of truth. This backup contains your live data.
+# If migrations fail or data is corrupted, you will restore from this backup.
+
 # Run backup script
 ./Docs/scripts/backup-production-db.sh
 
-# Verify backup exists
+# Verify backup file exists and has content
 ls -lh /tmp/backups/portfolio_backup_*.sql
+
+# CRITICAL: Verify production data state BEFORE migration
+PGPASSWORD="@Atr2xLtdda9EfdsXdky" psql \
+  -h localhost -p 5433 -U postgres -d portfolio \
+  -c "SELECT
+    (SELECT COUNT(*) FROM \"Project\") as projects,
+    (SELECT COUNT(*) FROM \"Publication\") as publications,
+    (SELECT COUNT(*) FROM \"User\") as users;"
+
+# Document these counts - they should match after migration
+# Save the timestamp of this backup for potential restoration
 ```
 
 **2.2 Review Deployment Impact**
@@ -283,21 +297,40 @@ gcloud logging read \
   --limit 20
 ```
 
-**4.2 Test Critical User Flows**
+**4.2 Verify Data Integrity**
+
+```bash
+# CRITICAL: Verify production data exists after migration
+# Data counts should MATCH the pre-deployment counts from Step 2.1
+
+PGPASSWORD="@Atr2xLtdda9EfdsXdky" psql \
+  -h localhost -p 5433 -U postgres -d portfolio \
+  -c "SELECT
+    (SELECT COUNT(*) FROM \"Project\") as projects,
+    (SELECT COUNT(*) FROM \"Publication\") as publications,
+    (SELECT COUNT(*) FROM \"User\") as users;"
+
+# Compare with counts from Step 2.1
+# If counts don't match or data is missing → RESTORE FROM BACKUP immediately
+# See Step 5.4 for database restoration procedure
+```
+
+**4.3 Test Critical User Flows**
 
 Test these paths in production:
 - [ ] Homepage loads
-- [ ] Projects page displays all projects
+- [ ] Projects page displays all projects (verify count matches database)
 - [ ] Individual project pages load
-- [ ] Publications page works
+- [ ] Publications page works (verify count matches database)
 - [ ] Guidebooks display correctly
 - [ ] Admin login works
 - [ ] Admin dashboard accessible
+- [ ] Admin dashboard shows correct project/publication counts
 - [ ] Create/edit operations work
 - [ ] Images load correctly
 - [ ] Navigation works
 
-**4.3 Monitor Performance**
+**4.4 Monitor Performance**
 
 ```bash
 # Check response times
@@ -309,7 +342,7 @@ gcloud run services describe portfolio-backend \
   --format="value(status.traffic)"
 ```
 
-**4.4 Update Changelog**
+**4.5 Update Changelog**
 
 Create entry in `/Docs/05-project-mgmt/CHANGELOG.md`:
 ```markdown
@@ -330,7 +363,7 @@ Create entry in `/Docs/05-project-mgmt/CHANGELOG.md`:
 - Database: No schema changes
 ```
 
-**4.5 Merge to Main**
+**4.6 Merge to Main**
 
 ```bash
 git checkout main
@@ -373,19 +406,34 @@ gcloud run services update-traffic portfolio-frontend \
   --region=us-central1
 ```
 
-**5.4 Rollback Database** (if migrations ran)
+**5.4 Rollback Database** (if migrations corrupted data)
+
+**WARNING**: This will restore the entire database to the backup state, losing any changes made after backup.
 
 ```bash
-# Start Cloud SQL Proxy
-cloud-sql-proxy personal-website-480707:us-central1:portfolio-db --port=5433 &
+# Ensure Cloud SQL Proxy is running
+# Check: lsof -i :5433
+# If not running: cloud-sql-proxy personal-website-480707:us-central1:portfolio-db --port=5433 &
 
-# Restore from backup
+# Find your backup file
+ls -lht /tmp/backups/portfolio_backup_*.sql | head -1
+
+# Restore from backup (replace [timestamp] with actual backup timestamp)
 PGPASSWORD="@Atr2xLtdda9EfdsXdky" psql \
   -h localhost \
   -p 5433 \
   -U postgres \
   -d portfolio \
   -f /tmp/backups/portfolio_backup_[timestamp].sql
+
+# Verify data restoration
+PGPASSWORD="@Atr2xLtdda9EfdsXdky" psql \
+  -h localhost -p 5433 -U postgres -d portfolio \
+  -c "SELECT
+    (SELECT COUNT(*) FROM \"Project\") as projects,
+    (SELECT COUNT(*) FROM \"Publication\") as publications;"
+
+# Counts should match pre-deployment counts from Step 2.1
 ```
 
 **5.5 Investigate and Fix**
@@ -444,23 +492,30 @@ PGPASSWORD="@Atr2xLtdda9EfdsXdky" psql \
 
 **Steps**:
 1. Create migration locally
-2. Test migration and rollback
-3. Backup production database
-4. Test migration on backup copy
-5. Deploy backend (migrations run automatically)
-6. **CRITICAL**: Verify migrations succeeded via API test
-7. If migrations failed, run `./Docs/scripts/run-prod-migrations.sh`
-8. Test data integrity
-9. Deploy frontend if needed
-10. Keep backup for 7 days
-11. Document schema changes
-12. Merge to main
+2. Test migration and rollback locally
+3. **CRITICAL**: Document production data counts (Step 2.1)
+4. Backup production database (includes schema + data)
+5. Test migration on backup copy locally
+6. Deploy backend (migrations run automatically)
+7. **CRITICAL**: Verify migrations succeeded via API test
+8. If migrations failed, run `./Docs/scripts/run-prod-migrations.sh`
+9. **CRITICAL**: Verify data integrity (Step 4.2 - counts must match Step 3)
+10. If data is missing or corrupted → Restore from backup immediately
+11. Deploy frontend if needed
+12. Keep backup for 7 days minimum
+13. Document schema changes
+14. Merge to main
 
 **Time**: ~45 minutes
 **Risk**: High
 
-**Common Pitfall**:
-The Dockerfile's `|| true` allows containers to start even when migrations fail. Always test the API endpoint after deployment to ensure migrations ran successfully. Look for "does not exist in the current database" errors which indicate migration failure.
+**NOTE**: Production database is the source of truth. Backups are for restoration if migration corrupts data, not for schema-only rollback.
+
+**Common Pitfalls**:
+
+1. **Migration Failures**: The Dockerfile's `|| true` allows containers to start even when migrations fail. Always test the API endpoint after deployment to ensure migrations ran successfully. Look for "does not exist in the current database" errors which indicate migration failure.
+
+2. **Data Loss During Migration**: Migrations can corrupt or delete data if not tested properly. **Always verify data counts before (Step 2.1) and after (Step 4.2) deployment**. If counts don't match, restore from backup immediately. Production is the source of truth - never assume you can recreate data from local.
 
 ## Emergency Procedures
 
