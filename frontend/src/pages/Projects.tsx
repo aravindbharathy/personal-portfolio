@@ -16,6 +16,17 @@ import { useProjects } from "@/hooks/useProjects";
 import { Link } from "react-router-dom";
 import { Search, Filter, Tag } from "lucide-react";
 
+// Helper function to get full research type display name
+const getResearchTypeDisplayName = (researchType: string): string => {
+  const typeMap: Record<string, string> = {
+    'FOUNDATIONAL': 'Foundational Research',
+    'EVALUATIVE': 'Evaluative Research',
+    'GENERATIVE': 'Generative Research',
+    'MIXED': 'Mixed-Methods Research'
+  };
+  return typeMap[researchType] || researchType.replace('_', ' ');
+};
+
 const Projects = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [researchType, setResearchType] = useState<string>("");
@@ -169,7 +180,7 @@ const Projects = () => {
                       <div className="flex flex-wrap gap-2 text-xs text-muted-foreground border-t pt-4">
                         <div className="flex items-center gap-1">
                           <Tag className="h-3 w-3" />
-                          <span>{project.researchType.replace('_', ' ')}</span>
+                          <span>{getResearchTypeDisplayName(project.researchType)}</span>
                         </div>
                         {project.duration && (
                           <>
