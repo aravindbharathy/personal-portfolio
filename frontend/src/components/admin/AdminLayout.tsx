@@ -7,6 +7,7 @@ import {
   FileText,
   BookOpen,
   Tags,
+  User,
   LogOut,
   Menu,
 } from 'lucide-react';
@@ -19,6 +20,7 @@ interface AdminLayoutProps {
 
 const navigation = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+  { name: 'About', href: '/admin/about', icon: User },
   { name: 'Projects', href: '/admin/projects', icon: FolderOpen },
   { name: 'Publications', href: '/admin/publications', icon: FileText },
   { name: 'Guidebooks', href: '/admin/guidebooks', icon: BookOpen },
