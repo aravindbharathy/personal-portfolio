@@ -58,10 +58,10 @@ const Projects = () => {
             <div className="pt-12 lg:pt-0">
               <p className="text-sm font-semibold text-primary mb-4 uppercase tracking-wide">Research Work</p>
               <h1 className="text-5xl lg:text-5xl font-light leading-tight text-foreground mb-8">
-                A collection of my favorite projects.
+                A collection of my recent favorite projects.
               </h1>
               <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-xl">
-                Case studies showcasing methodologies, insights, and measurable impact across industries.
+                Research case studies showcasing methodologies, insights, and measurable impact across industries.
               </p>
             </div>
 
