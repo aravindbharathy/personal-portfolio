@@ -10,22 +10,41 @@ import { Link } from 'react-router-dom';
 
 const Publications = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [platform, setPlatform] = useState<string>("");
+  const [selectedTopic, setSelectedTopic] = useState<string>("");
 
   const { data, isLoading } = usePublications({
     ...(searchQuery && { search: searchQuery }),
-    ...(platform && { platform }),
     published: 'true'
   });
 
-  const publications = data || [];
+  const allPublications = data || [];
 
-  // Extract unique platforms for filters
-  const platforms = [...new Set(publications.map(p => p.platform).filter(Boolean))];
+  // Filter by selected topic client-side
+  const publications = selectedTopic
+    ? allPublications.filter(p => p.tags?.some(t => t.tag.id === selectedTopic))
+    : allPublications;
+
+  // Extract unique topics/tags from ALL publications (not filtered) with counts
+  const allTags = allPublications.flatMap(p => p.tags || []);
+  const tagCounts = allTags.reduce((acc, { tag }) => {
+    acc[tag.id] = (acc[tag.id] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const uniqueTags = Array.from(
+    new Map(allTags.map(t => [t.tag.id, t.tag])).values()
+  ).map(tag => ({
+    ...tag,
+    count: tagCounts[tag.id] || 0
+  })).sort((a, b) => b.count - a.count); // Sort by count descending
 
   const handleClearFilters = () => {
     setSearchQuery("");
-    setPlatform("");
+    setSelectedTopic("");
+  };
+
+  const handleTopicClick = (topicId: string) => {
+    setSelectedTopic(prev => prev === topicId ? "" : topicId);
   };
 
   // Group publications by month/year
@@ -59,7 +78,7 @@ const Publications = () => {
                 Articles and insights
               </h1>
               <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-xl">
-                Thoughts on user research, design, and product strategy published across multiple platforms.
+                My thoughts on user research, design, and product strategy published across multiple platforms.
               </p>
             </div>
 
@@ -77,10 +96,27 @@ const Publications = () => {
                   </div>
 
                   <div className="pt-6 border-t-2 border-foreground/20">
-                    <p className="text-2xl md:text-3xl font-bold text-foreground mb-2">Platforms</p>
-                    <p className="text-sm text-foreground/70 font-medium">
-                      {platforms.length}
-                    </p>
+                    <p className="text-2xl md:text-3xl font-bold text-foreground mb-4">Topics</p>
+                    <div className="flex flex-wrap gap-2">
+                      {uniqueTags.length > 0 ? (
+                        uniqueTags.map((tag) => (
+                          <Badge
+                            key={tag.id}
+                            variant="secondary"
+                            className={`text-sm font-medium py-1 px-3 transition-colors cursor-pointer ${
+                              selectedTopic === tag.id
+                                ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                                : 'bg-foreground/10 hover:bg-foreground/20'
+                            }`}
+                            onClick={() => handleTopicClick(tag.id)}
+                          >
+                            {tag.name} ({tag.count})
+                          </Badge>
+                        ))
+                      ) : (
+                        <p className="text-sm text-foreground/70">No topics yet</p>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -105,22 +141,22 @@ const Publications = () => {
               />
             </div>
 
-            {/* Platform Filter */}
+            {/* Topic Filter */}
             <select
-              value={platform}
-              onChange={(e) => setPlatform(e.target.value)}
+              value={selectedTopic}
+              onChange={(e) => setSelectedTopic(e.target.value)}
               className="px-4 py-2 border rounded-lg bg-background text-foreground"
             >
-              <option value="">All Platforms</option>
-              {platforms.map((p) => (
-                <option key={p} value={p}>
-                  {p}
+              <option value="">All Topics</option>
+              {uniqueTags.map((tag) => (
+                <option key={tag.id} value={tag.id}>
+                  {tag.name} ({tag.count})
                 </option>
               ))}
             </select>
 
             {/* Clear Filters */}
-            {(searchQuery || platform) && (
+            {(searchQuery || selectedTopic) && (
               <Button variant="outline" onClick={handleClearFilters}>
                 Clear
               </Button>
@@ -155,7 +191,7 @@ const Publications = () => {
                   <div key={monthYear}>
                     {/* Month header with dot */}
                     <div className="relative mb-8 flex items-center">
-                      <div className="absolute -left-4 w-6 h-6 bg-background border-2 border-border rounded-full flex items-center justify-center">
+                      <div className="absolute left-[-1px] w-6 h-6 bg-background border-2 border-border rounded-full flex items-center justify-center">
                         <div className="w-2 h-2 rounded-full bg-secondary"></div>
                       </div>
                       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest ml-8">
@@ -177,7 +213,7 @@ const Publications = () => {
                           >
                             <div className={`relative ${!isLast ? 'pb-8 border-b border-border' : ''}`}>
                               {/* Small dot for article */}
-                              <div className="absolute -left-10 top-2 w-3 h-3 bg-secondary rounded-full border-2 border-background"></div>
+                              <div className="absolute -left-[27px] top-2 w-3 h-3 bg-secondary rounded-full border-2 border-background"></div>
 
                               {/* Content Card */}
                               <div className="group">

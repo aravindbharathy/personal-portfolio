@@ -132,7 +132,6 @@ export class GuidebookService {
         title: article.customTitle || article.publication.title,
         slug: article.publication.slug,
         excerpt: article.customExcerpt || article.publication.excerpt,
-        description: article.publication.description,
         readTime: article.publication.readTime,
         order: article.order,
       })),

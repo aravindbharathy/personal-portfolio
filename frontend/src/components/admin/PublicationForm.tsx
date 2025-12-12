@@ -4,7 +4,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
 import { useCreatePublication, useUpdatePublication, type Publication } from '@/hooks/usePublications';
+import { useTags } from '@/hooks/useTags';
 import { useToast } from '@/hooks/use-toast';
 
 interface PublicationFormProps {
@@ -39,12 +41,14 @@ export default function PublicationForm({
     readTime: 5,
     imageUrl: '',
     featured: false,
-    tagIds: [] as string[],
   });
+
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const createPublication = useCreatePublication();
   const updatePublication = useUpdatePublication();
   const { toast } = useToast();
+  const { data: tagsData } = useTags();
 
   useEffect(() => {
     if (publication) {
@@ -58,8 +62,8 @@ export default function PublicationForm({
         readTime: publication.readTime || 5,
         imageUrl: publication.imageUrl || '',
         featured: publication.featured || false,
-        tagIds: publication.tags?.map((t: any) => t.tag?.id || t.id) || [],
       });
+      setSelectedTags(publication.tags?.map((t: any) => t.tag?.id || t.id) || []);
     }
   }, [publication]);
 
@@ -82,6 +86,7 @@ export default function PublicationForm({
         publishedAt: new Date(formData.publishedAt).toISOString(),
         readTime: formData.readTime || undefined,
         imageUrl: formData.imageUrl || undefined,
+        tagIds: selectedTags,
       };
 
       if (publication) {
@@ -109,6 +114,15 @@ export default function PublicationForm({
       });
     }
   };
+
+  const toggleTag = (tagId: string) => {
+    setSelectedTags(prev =>
+      prev.includes(tagId) ? prev.filter(id => id !== tagId) : [...prev, tagId]
+    );
+  };
+
+  // Filter tags by category for topic tags (if TOPIC category exists)
+  const topicTags = tagsData?.filter(t => t.category === 'TOPIC') || [];
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -219,6 +233,28 @@ export default function PublicationForm({
           onChange={(e) => setFormData({ ...formData, readTime: parseInt(e.target.value) || 5 })}
         />
       </div>
+
+      {/* Topics/Tags */}
+      {topicTags.length > 0 && (
+        <div className="space-y-3">
+          <Label>Topics</Label>
+          <div className="flex flex-wrap gap-2 p-4 border rounded-md">
+            {topicTags.map((tag) => (
+              <Badge
+                key={tag.id}
+                variant={selectedTags.includes(tag.id) ? 'default' : 'outline'}
+                className="cursor-pointer"
+                onClick={() => toggleTag(tag.id)}
+              >
+                {tag.name}
+              </Badge>
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Click to select/deselect topics for this publication
+          </p>
+        </div>
+      )}
 
       {/* Featured */}
       <div className="flex items-center gap-2">

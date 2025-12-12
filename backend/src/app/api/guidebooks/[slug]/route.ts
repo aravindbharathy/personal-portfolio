@@ -6,7 +6,7 @@ import { successResponse, errorResponse } from '@/utils/api-response';
 import { handleError } from '@/utils/error-handler';
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { slug: string } }
 ) {
   try {
