@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
@@ -54,15 +54,24 @@ const Guidebooks = () => {
   const areas = Object.keys(groupedByArea).sort();
 
   // State for tracking open sections and guidebooks
-  // Initialize all sections as expanded by default
-  const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => {
-    const initial: Record<string, boolean> = {};
-    areas.forEach(area => {
-      initial[area] = true;
-    });
-    return initial;
-  });
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   const [openGuidebooks, setOpenGuidebooks] = useState<Record<string, boolean>>({});
+
+  // Ensure all sections are expanded by default when areas load
+  useEffect(() => {
+    if (areas.length > 0) {
+      setOpenSections(prev => {
+        const updated = { ...prev };
+        areas.forEach(area => {
+          // Only set to true if not already defined (preserves user's manual toggles)
+          if (updated[area] === undefined) {
+            updated[area] = true;
+          }
+        });
+        return updated;
+      });
+    }
+  }, [areas.join(',')]); // Using join to avoid array reference issues
 
   const toggleSection = (area: string) => {
     setOpenSections(prev => ({ ...prev, [area]: !prev[area] }));
