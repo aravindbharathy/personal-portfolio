@@ -8,15 +8,18 @@ import { ScrollToTop } from "@/components/ScrollToTop";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
+import About from "./pages/About";
 import Projects from "./pages/Projects";
 import ProjectDetail from "./pages/ProjectDetail";
 import Publications from "./pages/Publications";
 import Guidebooks from "./pages/Guidebooks";
+import GuidebookDetail from "./pages/GuidebookDetail";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminProjects from "./pages/admin/Projects";
 import AdminPublications from "./pages/admin/Publications";
 import AdminGuidebooks from "./pages/admin/Guidebooks";
 import AdminTags from "./pages/admin/Tags";
+import AdminAbout from "./pages/admin/About";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient({
@@ -41,13 +44,16 @@ const App = () => (
             <Route path="/login" element={<Login />} />
 
             {/* Public Routes */}
+            <Route path="/about" element={<About />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/projects/:slug" element={<ProjectDetail />} />
             <Route path="/publications" element={<Publications />} />
             <Route path="/guidebooks" element={<Guidebooks />} />
+            <Route path="/guidebooks/:slug" element={<GuidebookDetail />} />
 
             {/* Admin Routes */}
             <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/admin/about" element={<ProtectedRoute><AdminAbout /></ProtectedRoute>} />
             <Route path="/admin/projects" element={<ProtectedRoute><AdminProjects /></ProtectedRoute>} />
             <Route path="/admin/publications" element={<ProtectedRoute><AdminPublications /></ProtectedRoute>} />
             <Route path="/admin/guidebooks" element={<ProtectedRoute><AdminGuidebooks /></ProtectedRoute>} />

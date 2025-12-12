@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { useProject, type ProjectPictureGrid } from "@/hooks/useProjects";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { PictureGrid } from "@/components/PictureGrid";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const ProjectDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -50,12 +52,12 @@ const ProjectDetail = () => {
       <Navigation />
 
       {/* Hero Section with Floating Panel */}
-      <section className="relative pt-16 pb-32 px-4 bg-background overflow-hidden">
+      <section className="relative pt-24 pb-32 px-4 bg-background overflow-hidden">
         <div className="container mx-auto max-w-6xl">
           {/* Back Button */}
           <button
             onClick={() => navigate('/projects')}
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-12 transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Projects
@@ -79,33 +81,35 @@ const ProjectDetail = () => {
                 )}
               </div>
 
-              <h1 className="text-5xl lg:text-6xl font-light leading-tight text-foreground mb-8">
+              <h1 className="text-5xl lg:text-6xl font-bold leading-tight text-foreground mb-8">
                 {project.title}
               </h1>
 
-              <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-lg">
-                {project.overview}
-              </p>
+              <div className="text-3xl lg:text-3xl prose prose-lg prose-slate dark:prose-invert max-w-lg">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.overview}</ReactMarkdown>
+              </div>
             </div>
 
             {/* Right: Floating Panel with Stats */}
             <div className="relative flex justify-center lg:justify-end">
               <div className="bg-secondary dark:bg-secondary rounded-2xl p-8 md:p-10 max-w-sm w-full">
                 <div className="space-y-8">
-                  {project.duration && (
+                  
+
+                  {project.role && (
                     <div>
-                      <p className="text-xs font-semibold text-foreground uppercase tracking-widest mb-2">Duration</p>
-                      <p className="text-3xl md:text-4xl font-bold text-foreground">
-                        {project.duration}
+                      <p className="text-xs font-semibold text-foreground uppercase tracking-widest mb-2">Role</p>
+                      <p className="text-3xl font-bold text-foreground">
+                        {project.role}
                       </p>
                     </div>
                   )}
 
-                  {project.role && (
-                    <div className={project.duration ? "pt-6 border-t-2 border-foreground/20" : ""}>
-                      <p className="text-xs font-semibold text-foreground uppercase tracking-widest mb-2">Role</p>
-                      <p className="text-lg font-semibold text-foreground">
-                        {project.role}
+                  {project.duration && (
+                    <div className={project.role ? "pt-6 border-t-2 border-foreground/20" : ""}>
+                      <p className="text-xs font-semibold text-foreground uppercase tracking-widest mb-2">Duration</p>
+                      <p className="text-3xl md:text-4xl font-bold text-foreground">
+                        {project.duration}
                       </p>
                     </div>
                   )}
@@ -145,10 +149,8 @@ const ProjectDetail = () => {
           <h2 className="text-4xl md:text-5xl font-bold mb-12">
             {project.objectivesHeading || 'Research Objectives'}
           </h2>
-          <div className="prose prose-slate max-w-none dark:prose-invert">
-            <p className="text-lg text-muted-foreground leading-relaxed whitespace-pre-wrap">
-              {project.objectives}
-            </p>
+          <div className="prose prose-lg prose-slate max-w-none dark:prose-invert">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.objectives}</ReactMarkdown>
           </div>
 
           {/* Picture grids after objectives */}
@@ -171,10 +173,8 @@ const ProjectDetail = () => {
           </h2>
 
           <div className="space-y-12">
-            <div className="prose prose-slate max-w-none dark:prose-invert">
-              <p className="text-lg text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                {project.methodology}
-              </p>
+            <div className="prose prose-lg prose-slate max-w-none dark:prose-invert">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.methodology}</ReactMarkdown>
             </div>
 
             {/* Methods Grid */}
@@ -210,10 +210,8 @@ const ProjectDetail = () => {
           <h2 className="text-4xl md:text-5xl font-bold mb-12">
             {project.findingsHeading || 'Key Findings & Insights'}
           </h2>
-          <div className="prose prose-slate max-w-none dark:prose-invert">
-            <p className="text-lg text-muted-foreground leading-relaxed whitespace-pre-wrap">
-              {project.findings}
-            </p>
+          <div className="prose prose-lg prose-slate max-w-none dark:prose-invert">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.findings}</ReactMarkdown>
           </div>
 
           {/* Picture grids after findings */}
@@ -234,10 +232,8 @@ const ProjectDetail = () => {
           <h2 className="text-4xl md:text-5xl font-bold mb-12">
             {project.impactHeading || 'Impact & Outcomes'}
           </h2>
-          <div className="prose prose-slate max-w-none dark:prose-invert">
-            <p className="text-lg text-muted-foreground leading-relaxed whitespace-pre-wrap">
-              {project.impact}
-            </p>
+          <div className="prose prose-lg prose-slate max-w-none dark:prose-invert">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.impact}</ReactMarkdown>
           </div>
 
           {/* Picture grids after impact */}
