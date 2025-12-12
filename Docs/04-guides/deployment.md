@@ -206,10 +206,41 @@ DATABASE_URL="postgresql://postgres:PASSWORD@localhost:5433/portfolio" \
 
 **Backend (Cloud Run):**
 ```yaml
-DATABASE_URL: "postgresql://postgres:%40Atr2xLtdda9EfdsXdky@localhost/portfolio?host=/cloudsql/personal-website-480707:us-central1:portfolio-db"
+DATABASE_URL: "postgresql://postgres:PASSWORD@localhost:5432/portfolio?host=/cloudsql/personal-website-480707:us-central1:portfolio-db"
 JWT_SECRET: (from Secret Manager)
-ALLOWED_ORIGINS: "https://portfolio-frontend-1017578449720.us-central1.run.app,https://aravindbharathy.com"
+ALLOWED_ORIGINS: "https://aravindbharathy.com"
+NODE_ENV: "production"
 ```
+
+**CRITICAL - Environment Variable Management:**
+
+When updating Cloud Run environment variables, you must set ALL string environment variables at once using `--set-env-vars`. Using `--update-env-vars` can cause previously configured variables to be lost.
+
+**Correct way to update environment variables:**
+```bash
+# Get secrets
+DB_PASSWORD=$(gcloud secrets versions access latest --secret="db-password")
+SQL_CONNECTION="personal-website-480707:us-central1:portfolio-db"
+
+# Set ALL env vars together (JWT_SECRET persists from Secret Manager reference)
+gcloud run services update portfolio-backend \
+  --region us-central1 \
+  --set-env-vars "NODE_ENV=production,DATABASE_URL=postgresql://postgres:${DB_PASSWORD}@localhost:5432/portfolio?host=/cloudsql/${SQL_CONNECTION},ALLOWED_ORIGINS=https://aravindbharathy.com"
+```
+
+**Common Mistake:**
+```bash
+# WRONG - This will remove other environment variables
+gcloud run services update portfolio-backend \
+  --region us-central1 \
+  --update-env-vars ALLOWED_ORIGINS=https://aravindbharathy.com
+```
+
+**CORS Configuration:**
+- The `ALLOWED_ORIGINS` environment variable is REQUIRED for CORS to work properly
+- The middleware uses this to set the `Access-Control-Allow-Origin` header
+- Cannot use wildcard (`*`) when credentials are included - must specify exact origin
+- Multiple origins can be comma-separated if needed
 
 **Frontend (Build time):**
 ```yaml
@@ -232,9 +263,28 @@ gcloud logging read \
 ```
 
 **Common Issues:**
-1. **Migration failures:** Run `./Docs/scripts/run-prod-migrations.sh`
-2. **CORS errors:** Update ALLOWED_ORIGINS environment variable
-3. **Database connection:** Check Cloud SQL instance is running and connection string is correct
+
+1. **Migration failures:**
+   - Run `./Docs/scripts/run-prod-migrations.sh`
+   - Check logs for Prisma migration errors
+
+2. **CORS errors ("Access-Control-Allow-Origin" header issues):**
+   - Symptom: Frontend cannot communicate with backend, CORS policy errors in browser console
+   - Cause: Missing or incorrect `ALLOWED_ORIGINS` environment variable
+   - Fix: Ensure `ALLOWED_ORIGINS` is set to exact frontend domain (e.g., `https://aravindbharathy.com`)
+   - Note: Cannot use wildcard (`*`) when credentials (cookies) are included in requests
+
+3. **500 Internal Server Error after deployment:**
+   - Symptom: All API endpoints return 500 errors
+   - Check logs for: "Environment variable not found: DATABASE_URL"
+   - Cause: `DATABASE_URL` was accidentally removed when updating other environment variables
+   - Fix: Re-apply ALL environment variables using the correct command (see Environment Variables section above)
+   - Prevention: Always use `--set-env-vars` with ALL variables, never use `--update-env-vars` alone
+
+4. **Database connection errors:**
+   - Check Cloud SQL instance is running: `gcloud sql instances describe portfolio-db`
+   - Verify DATABASE_URL is set: `gcloud run services describe portfolio-backend --format="value(spec.template.spec.containers[0].env)" --region=us-central1`
+   - Verify Cloud SQL connection is configured: Check `--add-cloudsql-instances` in deployment
 
 **Rollback:**
 ```bash

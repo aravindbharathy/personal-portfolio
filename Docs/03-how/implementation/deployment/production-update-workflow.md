@@ -517,6 +517,10 @@ PGPASSWORD="@Atr2xLtdda9EfdsXdky" psql \
 
 2. **Data Loss During Migration**: Migrations can corrupt or delete data if not tested properly. **Always verify data counts before (Step 2.1) and after (Step 4.2) deployment**. If counts don't match, restore from backup immediately. Production is the source of truth - never assume you can recreate data from local.
 
+3. **Environment Variable Loss**: When updating Cloud Run environment variables with `gcloud run services update --update-env-vars`, previously configured string environment variables can be lost. **Always use `--set-env-vars` with ALL variables**. Missing `DATABASE_URL` will cause all API endpoints to return 500 errors with "Environment variable not found" in logs.
+
+4. **CORS Misconfiguration**: The `ALLOWED_ORIGINS` environment variable is required for the middleware to properly set CORS headers. Without it, or with wildcard `*` when credentials are used, the browser will block requests with CORS policy errors. Always set to the exact frontend domain (e.g., `https://aravindbharathy.com`).
+
 ## Emergency Procedures
 
 ### Immediate Rollback Required
@@ -544,6 +548,30 @@ If data is corrupted:
 # 3. Verify data integrity
 # 4. Resume service
 # 5. Investigate root cause
+```
+
+### Environment Variable Loss (500 Errors After Deployment)
+
+If all API endpoints suddenly return 500 errors after a deployment:
+
+```bash
+# 1. Check logs for DATABASE_URL error
+gcloud logging read \
+  "resource.type=cloud_run_revision AND resource.labels.service_name=portfolio-backend AND severity>=ERROR" \
+  --limit 5
+
+# If you see "Environment variable not found: DATABASE_URL":
+
+# 2. Immediately restore all environment variables
+DB_PASSWORD=$(gcloud secrets versions access latest --secret="db-password")
+SQL_CONNECTION="personal-website-480707:us-central1:portfolio-db"
+
+gcloud run services update portfolio-backend \
+  --region us-central1 \
+  --set-env-vars "NODE_ENV=production,DATABASE_URL=postgresql://postgres:${DB_PASSWORD}@localhost:5432/portfolio?host=/cloudsql/${SQL_CONNECTION},ALLOWED_ORIGINS=https://aravindbharathy.com"
+
+# 3. Verify service is working
+curl https://portfolio-backend-1017578449720.us-central1.run.app/api/projects
 ```
 
 ## Best Practices
