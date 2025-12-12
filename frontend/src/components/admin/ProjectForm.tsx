@@ -265,7 +265,7 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
             <SelectItem value="FOUNDATIONAL">Foundational Research</SelectItem>
             <SelectItem value="EVALUATIVE">Evaluative Research</SelectItem>
             <SelectItem value="GENERATIVE">Generative Research</SelectItem>
-            <SelectItem value="MIXED">Mixed Methods</SelectItem>
+            <SelectItem value="MIXED">Mixed-Methods Research</SelectItem>
           </SelectContent>
         </Select>
         {errors.researchType && (
