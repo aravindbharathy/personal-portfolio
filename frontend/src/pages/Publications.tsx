@@ -175,7 +175,7 @@ const Publications = () => {
           ) : publications.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground">
-                {searchQuery || platform
+                {searchQuery || selectedTopic
                   ? "No articles found matching your filters."
                   : "No articles available yet."}
               </p>
