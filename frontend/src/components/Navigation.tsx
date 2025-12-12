@@ -9,9 +9,9 @@ const Navigation = () => {
   const navItems = [
     { name: "Home", path: "/" },
     { name: "Projects", path: "/projects" },
-    { name: "About", path: "/about" },
     { name: "Publications", path: "/publications" },
     { name: "Guidebooks", path: "/guidebooks" },
+    { name: "About", path: "/about" },
   ];
 
   return (
@@ -34,8 +34,10 @@ const Navigation = () => {
                 {item.name}
               </NavLink>
             ))}
-            <Button size="sm" className="ml-2">
-              Contact
+            <Button size="sm" className="ml-2" asChild>
+              <a href="https://www.linkedin.com/in/aravindbharathy/" target="_blank" rel="noopener noreferrer">
+                LinkedIn
+              </a>
             </Button>
           </div>
 
@@ -64,8 +66,10 @@ const Navigation = () => {
                   {item.name}
                 </NavLink>
               ))}
-              <Button size="sm" className="w-full">
-                Contact
+              <Button size="sm" className="w-full" asChild>
+                <a href="https://www.linkedin.com/in/aravindbharathy/" target="_blank" rel="noopener noreferrer">
+                  LinkedIn
+                </a>
               </Button>
             </div>
           </div>

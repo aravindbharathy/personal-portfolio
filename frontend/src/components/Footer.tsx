@@ -1,13 +1,12 @@
-import { Github, Linkedin, Mail, FileText } from "lucide-react";
+import { Github, Linkedin, Mail } from "lucide-react";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   const socialLinks = [
-    { icon: Github, href: "#", label: "GitHub" },
-    { icon: Linkedin, href: "#", label: "LinkedIn" },
-    { icon: Mail, href: "#", label: "Email" },
-    { icon: FileText, href: "#", label: "Medium" },
+    { icon: Github, href: "https://github.com/aravindbharathy", label: "GitHub" },
+    { icon: Linkedin, href: "https://www.linkedin.com/in/aravindbharathy/", label: "LinkedIn" },
+    { icon: Mail, href: "mailto:avn2606@gmail.com", label: "Email" },
   ];
 
   return (

@@ -6,12 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, BookOpen, FileText, FolderOpen, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTimeline } from "@/hooks/useTimeline";
-import { useFeaturedProjects } from "@/hooks/useProjects";
+// import { useFeaturedProjects } from "@/hooks/useProjects";
 import { format } from "date-fns";
 
 const Index = () => {
   const { data: timelineData, isLoading: timelineLoading } = useTimeline({ limit: 10 });
-  const { data: featuredProjects, isLoading: projectsLoading } = useFeaturedProjects();
+  // const { data: featuredProjects, isLoading: projectsLoading } = useFeaturedProjects();
 
   const quickLinks = [
     {
@@ -46,7 +46,7 @@ const Index = () => {
               Hi, I'm Aravind, a UX Researcher.
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              I'm an experienced industry researcher with background in Human-Computer Interaction and Computer Science. </p>
+              I'm an experienced industry researcher with background in Human-Computer Interaction and Computer Science. I specialize in building highly technical enterprise grade products.</p>
             <p className="text-lg text-muted-foreground leading-relaxed">
               Right now, I am focused on leveraging research to build with our AI future in mind. I also advise a handful of AI startups. Check out my latest thoughts on <a href="/publications" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Medium</a> and my <a href="/guidebooks" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Guidebooks</a> for building with AI .
             </p>
@@ -178,8 +178,8 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Featured Projects Preview */}
-      {!projectsLoading && featuredProjects && featuredProjects.length > 0 && (
+      {/* Featured Projects Preview - HIDDEN */}
+      {/* {!projectsLoading && featuredProjects && featuredProjects.length > 0 && (
         <section className="py-16 px-4 bg-muted">
           <div className="container mx-auto max-w-4xl">
             <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-8">
@@ -187,22 +187,24 @@ const Index = () => {
             </h2>
             <div className="grid md:grid-cols-2 gap-6">
               {featuredProjects.slice(0, 4).map((project) => (
-                <Card key={project.id} className="hover:shadow-lg transition-shadow">
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-semibold text-foreground mb-2">
-                      {project.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
-                      {project.overview}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge variant="outline">{project.researchType}</Badge>
-                      {project.industry && (
-                        <Badge variant="outline">{project.industry}</Badge>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+                <Link key={project.id} to={`/projects/${project.slug}`}>
+                  <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer">
+                    <CardContent className="p-6">
+                      <h3 className="text-xl font-semibold text-foreground mb-2">
+                        {project.title}
+                      </h3>
+                      <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
+                        {project.overview}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        <Badge variant="outline">{project.researchType}</Badge>
+                        {project.industry && (
+                          <Badge variant="outline">{project.industry}</Badge>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
               ))}
             </div>
             <div className="text-center mt-8">
@@ -215,7 +217,7 @@ const Index = () => {
             </div>
           </div>
         </section>
-      )}
+      )} */}
 
       {/* Simple CTA */}
       <section className="py-16 px-4">
@@ -226,8 +228,10 @@ const Index = () => {
           <p className="text-muted-foreground">
             I'm always interested in hearing about new research opportunities and collaborations.
           </p>
-          <Button variant="outline">
-            Get In Touch
+          <Button variant="outline" asChild>
+            <a href="https://www.linkedin.com/in/aravindbharathy/" target="_blank" rel="noopener noreferrer">
+              Get In Touch
+            </a>
           </Button>
         </div>
       </section>
