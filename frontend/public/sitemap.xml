@@ -6,40 +6,40 @@
 
   <!-- Homepage -->
   <url>
-    <loc>https://aravindbharathy.com/</loc>
-    <lastmod>2025-12-12</lastmod>
+    <loc>https://portfolio-frontend-1017578449720.us-central1.run.app/</loc>
+    <lastmod>2025-12-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <!-- Projects Page -->
   <url>
-    <loc>https://aravindbharathy.com/projects</loc>
-    <lastmod>2025-12-12</lastmod>
+    <loc>https://portfolio-frontend-1017578449720.us-central1.run.app/projects</loc>
+    <lastmod>2025-12-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <!-- Publications Page -->
   <url>
-    <loc>https://aravindbharathy.com/publications</loc>
-    <lastmod>2025-12-12</lastmod>
+    <loc>https://portfolio-frontend-1017578449720.us-central1.run.app/publications</loc>
+    <lastmod>2025-12-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <!-- Guidebooks Page -->
   <url>
-    <loc>https://aravindbharathy.com/guidebooks</loc>
-    <lastmod>2025-12-12</lastmod>
+    <loc>https://portfolio-frontend-1017578449720.us-central1.run.app/guidebooks</loc>
+    <lastmod>2025-12-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <!-- About Page -->
   <url>
-    <loc>https://aravindbharathy.com/about</loc>
-    <lastmod>2025-12-12</lastmod>
+    <loc>https://portfolio-frontend-1017578449720.us-central1.run.app/about</loc>
+    <lastmod>2025-12-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
