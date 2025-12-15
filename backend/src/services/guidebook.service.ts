@@ -62,6 +62,7 @@ export class GuidebookService {
         slug: article.publication.slug,
         excerpt: article.customExcerpt || article.publication.excerpt,
         readTime: article.publication.readTime,
+        externalUrl: article.publication.externalUrl,
         order: article.order,
       })),
     }));
