@@ -153,9 +153,9 @@ const GuidebookDetail = () => {
                           </h3>
                           <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary flex-shrink-0 mt-1 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
-                        {(article.excerpt || article.description) && (
+                        {article.excerpt && (
                           <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-                            {article.excerpt || article.description}
+                            {article.excerpt}
                           </p>
                         )}
                         {article.readTime && (

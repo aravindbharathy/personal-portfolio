@@ -6,7 +6,6 @@ export interface GuidebookArticle {
   title: string;
   slug: string;
   excerpt?: string;
-  description?: string;
   readTime?: number;
   externalUrl?: string;
   url?: string;
