@@ -8,6 +8,8 @@ export interface GuidebookArticle {
   excerpt?: string;
   description?: string;
   readTime?: number;
+  externalUrl?: string;
+  url?: string;
   order: number;
 }
 
