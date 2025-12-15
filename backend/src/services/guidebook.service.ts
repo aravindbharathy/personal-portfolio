@@ -134,7 +134,6 @@ export class GuidebookService {
         excerpt: article.customExcerpt || article.publication.excerpt,
         readTime: article.publication.readTime,
         externalUrl: article.publication.externalUrl,
-        url: article.publication.url,
         order: article.order,
       })),
     };

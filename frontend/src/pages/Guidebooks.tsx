@@ -269,7 +269,7 @@ const Guidebooks = () => {
                                     .map((article, idx) => (
                                       <a
                                         key={article.id}
-                                        href={article.externalUrl || article.url || `/publications#${article.slug}`}
+                                        href={article.externalUrl || `/publications#${article.slug}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="flex items-start gap-4 p-4 rounded-lg hover:bg-secondary/20 transition-colors group/article border border-transparent hover:border-primary/20"

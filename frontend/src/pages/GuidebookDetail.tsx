@@ -136,7 +136,7 @@ const GuidebookDetail = () => {
               {sortedArticles.map((article, idx) => (
                 <a
                   key={article.id}
-                  href={article.externalUrl || article.url || `/publications#${article.slug}`}
+                  href={article.externalUrl || `/publications#${article.slug}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block group"
