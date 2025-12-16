@@ -12,11 +12,18 @@ Feature documents provide high-level descriptions of what each feature does and 
 
 ## Features in This Catalog
 
+### Core Content Features
 1. **[Projects](./projects.md)** - Research case study portfolio with detailed documentation
 2. **[Publications](./publications.md)** - Multi-platform article aggregation and display
 3. **[Guidebooks](./guidebooks.md)** - Curated thematic collections of articles
-4. **[Admin Panel](./admin-panel.md)** - Content management and publishing controls
-5. **[Authentication](./authentication.md)** - Secure admin access system
+4. **[About](./about.md)** - Professional profile and contact information page
+
+### Organizational Infrastructure
+5. **[Tags](./tags.md)** - Categorized tagging system for content organization and discovery
+
+### Administrative Features
+6. **[Admin Panel](./admin-panel.md)** - Content management and publishing controls
+7. **[Authentication](./authentication.md)** - Secure admin access system
 
 ## Feature vs. Spec Distinction
 
@@ -48,4 +55,4 @@ Feature documents provide high-level descriptions of what each feature does and 
 
 ---
 
-**Last Updated:** 2025-01-21
+**Last Updated:** 2025-12-15
