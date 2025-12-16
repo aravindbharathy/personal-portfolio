@@ -4,8 +4,8 @@ import bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 async function main() {
-  const email = 'admin@example.com';
-  const password = 'admin123';
+  const email = 'avn2606@gmail.com';
+  const password = 'PJcPdY6gzx782K6!gR8Q';
 
   console.log('Resetting admin user...');
 

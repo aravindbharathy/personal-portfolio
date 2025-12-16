@@ -2,17 +2,15 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-async function main() {
-  console.log('Rebuilding content timeline...');
+async function rebuildTimeline() {
+  console.log('Rebuilding timeline...');
 
   await prisma.$transaction(async (tx) => {
     // Clear existing timeline
-    console.log('Clearing existing timeline entries...');
     await tx.contentTimeline.deleteMany({});
-    console.log('✓ Timeline cleared');
+    console.log('Cleared existing timeline');
 
     // Add published projects
-    console.log('\nAdding projects to timeline...');
     const projects = await tx.project.findMany({
       where: { published: true },
       include: {
@@ -37,10 +35,9 @@ async function main() {
         },
       });
     }
-    console.log(`✓ Added ${projects.length} project(s)`);
+    console.log(`Added ${projects.length} projects`);
 
     // Add publications
-    console.log('\nAdding publications to timeline...');
     const publications = await tx.publication.findMany({
       include: {
         tags: {
@@ -59,17 +56,16 @@ async function main() {
           title: publication.title,
           excerpt: publication.excerpt,
           date: publication.publishedAt,
-          url: `/publications/${publication.slug}`,
+          url: publication.externalUrl, // Use external URL for direct article link
           tags: publication.tags.map((t) => t.tag.name),
           readTime: publication.readTime,
           platform: publication.platform,
         },
       });
     }
-    console.log(`✓ Added ${publications.length} publication(s)`);
+    console.log(`Added ${publications.length} publications`);
 
     // Add published guidebooks
-    console.log('\nAdding guidebooks to timeline...');
     const guidebooks = await tx.guidebook.findMany({
       where: { published: true },
     });
@@ -88,21 +84,15 @@ async function main() {
         },
       });
     }
-    console.log(`✓ Added ${guidebooks.length} guidebook(s)`);
+    console.log(`Added ${guidebooks.length} guidebooks`);
   });
 
-  const total = await prisma.contentTimeline.count();
-
-  console.log('\n✅ Timeline rebuilt successfully!');
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log(`Total entries: ${total}`);
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log('\nRefresh your homepage to see the updated timeline.');
+  console.log('Timeline rebuilt successfully!');
 }
 
-main()
-  .catch((e) => {
-    console.error('Error:', e);
+rebuildTimeline()
+  .catch((error) => {
+    console.error('Error rebuilding timeline:', error);
     process.exit(1);
   })
   .finally(async () => {

@@ -85,7 +85,7 @@ export class TimelineService {
             title: publication.title,
             excerpt: publication.excerpt,
             date: publication.publishedAt,
-            url: `/publications/${publication.slug}`,
+            url: publication.externalUrl, // Use external URL for direct article link
             tags: publication.tags.map((t) => t.tag.name),
             readTime: publication.readTime,
             platform: publication.platform,

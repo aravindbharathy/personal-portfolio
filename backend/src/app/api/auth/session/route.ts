@@ -1,8 +1,7 @@
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { authenticate } from '@/middleware/auth.middleware';
-import { successResponse, errorResponse } from '@/utils/api-response';
-import { handleError } from '@/utils/error-handler';
+import { successResponse } from '@/utils/api-response';
 
 export async function GET(request: NextRequest) {
   try {

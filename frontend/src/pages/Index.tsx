@@ -116,57 +116,122 @@ const Index = () => {
             </div>
           ) : timelineData && timelineData.items.length > 0 ? (
             <div className="space-y-6">
-              {timelineData.items.map((item) => (
-                <Card key={item.id}>
-                  <CardContent className="p-6">
-                    <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0">
-                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-accent">
-                          {item.contentType === 'PROJECT' && <FolderOpen className="h-5 w-5" />}
-                          {item.contentType === 'PUBLICATION' && <FileText className="h-5 w-5" />}
-                          {item.contentType === 'GUIDEBOOK' && <BookOpen className="h-5 w-5" />}
-                        </div>
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Badge variant="secondary" className="text-xs">
-                            {item.contentType}
-                          </Badge>
-                          {item.platform && (
-                            <Badge variant="outline" className="text-xs">
-                              {item.platform}
-                            </Badge>
-                          )}
-                          <span className="text-sm text-muted-foreground flex items-center gap-1">
-                            <Calendar className="h-3 w-3" />
-                            {format(new Date(item.date), 'MMM d, yyyy')}
-                          </span>
-                          {item.readTime && (
-                            <span className="text-sm text-muted-foreground">
-                              {item.readTime} min read
-                            </span>
-                          )}
-                        </div>
-                        <h3 className="text-lg font-semibold text-foreground mb-2">
-                          {item.title}
-                        </h3>
-                        <p className="text-sm text-muted-foreground line-clamp-2">
-                          {item.excerpt}
-                        </p>
-                        {item.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mt-3">
-                            {item.tags.slice(0, 3).map((tag, idx) => (
-                              <Badge key={idx} variant="outline" className="text-xs">
-                                {tag}
-                              </Badge>
-                            ))}
+              {timelineData.items.map((item) => {
+                // For publications, open external link in new tab
+                if (item.contentType === 'PUBLICATION') {
+                  return (
+                    <a
+                      key={item.id}
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block"
+                    >
+                      <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                        <CardContent className="p-6">
+                          <div className="flex items-start gap-4">
+                            <div className="flex-shrink-0">
+                              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-accent">
+                                <FileText className="h-5 w-5" />
+                              </div>
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <Badge variant="secondary" className="text-xs">
+                                  {item.contentType}
+                                </Badge>
+                                {item.platform && (
+                                  <Badge variant="outline" className="text-xs">
+                                    {item.platform}
+                                  </Badge>
+                                )}
+                                <span className="text-sm text-muted-foreground flex items-center gap-1">
+                                  <Calendar className="h-3 w-3" />
+                                  {format(new Date(item.date), 'MMM d, yyyy')}
+                                </span>
+                                {item.readTime && (
+                                  <span className="text-sm text-muted-foreground">
+                                    {item.readTime} min read
+                                  </span>
+                                )}
+                              </div>
+                              <h3 className="text-lg font-semibold text-foreground mb-2">
+                                {item.title}
+                              </h3>
+                              <p className="text-sm text-muted-foreground line-clamp-2">
+                                {item.excerpt}
+                              </p>
+                              {item.tags.length > 0 && (
+                                <div className="flex flex-wrap gap-1 mt-3">
+                                  {item.tags.slice(0, 3).map((tag, idx) => (
+                                    <Badge key={idx} variant="outline" className="text-xs">
+                                      {tag}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                        </CardContent>
+                      </Card>
+                    </a>
+                  );
+                }
+
+                // For projects and guidebooks, use internal routing
+                return (
+                  <Link key={item.id} to={item.url}>
+                    <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                      <CardContent className="p-6">
+                        <div className="flex items-start gap-4">
+                          <div className="flex-shrink-0">
+                            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-accent">
+                              {item.contentType === 'PROJECT' && <FolderOpen className="h-5 w-5" />}
+                              {item.contentType === 'GUIDEBOOK' && <BookOpen className="h-5 w-5" />}
+                            </div>
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Badge variant="secondary" className="text-xs">
+                                {item.contentType}
+                              </Badge>
+                              {item.platform && (
+                                <Badge variant="outline" className="text-xs">
+                                  {item.platform}
+                                </Badge>
+                              )}
+                              <span className="text-sm text-muted-foreground flex items-center gap-1">
+                                <Calendar className="h-3 w-3" />
+                                {format(new Date(item.date), 'MMM d, yyyy')}
+                              </span>
+                              {item.readTime && (
+                                <span className="text-sm text-muted-foreground">
+                                  {item.readTime} min read
+                                </span>
+                              )}
+                            </div>
+                            <h3 className="text-lg font-semibold text-foreground mb-2">
+                              {item.title}
+                            </h3>
+                            <p className="text-sm text-muted-foreground line-clamp-2">
+                              {item.excerpt}
+                            </p>
+                            {item.tags.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-3">
+                                {item.tags.slice(0, 3).map((tag, idx) => (
+                                  <Badge key={idx} variant="outline" className="text-xs">
+                                    {tag}
+                                  </Badge>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                );
+              })}
             </div>
           ) : (
             <Card>

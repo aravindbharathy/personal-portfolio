@@ -23,19 +23,9 @@ const nextConfig = {
     ],
   },
 
-  // API routes configuration
+  // API routes configuration - CORS handled in middleware for dynamic origin support
   async headers() {
-    return [
-      {
-        source: '/api/:path*',
-        headers: [
-          { key: 'Access-Control-Allow-Credentials', value: 'true' },
-          { key: 'Access-Control-Allow-Origin', value: process.env.ALLOWED_ORIGINS || '*' },
-          { key: 'Access-Control-Allow-Methods', value: 'GET,DELETE,PATCH,POST,PUT,OPTIONS' },
-          { key: 'Access-Control-Allow-Headers', value: 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization' },
-        ],
-      },
-    ];
+    return [];
   },
 
   // Rewrites for API versioning (optional)
@@ -54,11 +44,8 @@ const nextConfig = {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
   },
 
-  // Experimental features
-  experimental: {
-    // Enable server actions if needed
-    serverActions: true,
-  },
+  // Experimental features (if needed in the future)
+  // experimental: {},
 
   // Output configuration for deployment
   output: 'standalone', // For Docker/container deployments
