@@ -1,4 +1,4 @@
-# Backend Dockerfile for Google Cloud Run
+# Backend Dockerfile for containerized deployment (Railway / Cloud Run)
 FROM node:20-alpine AS base
 
 # Install dependencies only when needed
@@ -55,10 +55,10 @@ RUN npx prisma generate
 
 USER nextjs
 
-EXPOSE 8080
+EXPOSE ${PORT:-8080}
 
-ENV PORT 8080
-ENV HOSTNAME "0.0.0.0"
+ENV PORT=${PORT:-8080}
+ENV HOSTNAME="0.0.0.0"
 
 # Run migrations and start server
 # Skip migrations if DB connection unavailable (assume pre-migrated)
