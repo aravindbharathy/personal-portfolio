@@ -38,7 +38,7 @@ Simply open this project in your AI coding assistant and say:
 
 1. Clone this repository
 2. Open in Claude Code, Cursor, or your preferred AI coding assistant
-3. Say: "Set up my portfolio for [Your Name]. I'm a [Your Role]. Deploy it to [Vercel/GCP/your platform]."
+3. Say: "Set up my portfolio for [Your Name]. I'm a [Your Role]. Deploy it to Railway and Cloudflare Pages."
 4. Your AI assistant will:
    - Configure all environment variables
    - Set up the PostgreSQL database
@@ -186,7 +186,7 @@ npm run dev        # Starts on http://localhost:5173
 | **Database** | PostgreSQL 15 · Prisma ORM 5 |
 | **Auth** | JWT · HTTP-only Cookies · bcrypt |
 | **Validation** | Zod Schemas |
-| **Deployment** | Docker · Google Cloud Run (or Vercel) |
+| **Deployment** | Railway · Cloudflare Pages · GitHub Actions |
 
 ---
 
@@ -308,56 +308,37 @@ The portfolio uses PostgreSQL with the following main models:
 
 ## 🚢 Deployment
 
-### Option 1: Google Cloud Platform (Recommended)
+This project deploys on **Railway** (backend + PostgreSQL) and **Cloudflare Pages** (frontend), with GitHub Actions for CI/CD. Total cost: $0-5/month.
 
-This template includes production-ready deployment scripts for GCP:
+### Backend: Railway
 
-```bash
-# Initial setup (one-time)
-./Docs/scripts/setup-gcp.sh
-
-# Deploy everything
-./Docs/scripts/deploy-all.sh
-
-# Or deploy individually
-./Docs/scripts/deploy-backend.sh
-./Docs/scripts/deploy-frontend.sh
-```
-
-**📖 Full Guide:** [GCP Deployment Documentation](./Docs/03-how/implementation/deployment/gcp-deployment.impl.md)
-
-### Option 2: Vercel (Easiest)
+The backend auto-deploys from GitHub via Railway. For manual deployment:
 
 ```bash
-# Install Vercel CLI
-npm install -g vercel
+# First-time setup
+./deploy-railway.sh setup
 
 # Deploy backend
-cd backend && vercel --prod
-
-# Deploy frontend
-cd frontend && vercel --prod
-
-# Add environment variables in Vercel dashboard
-# Connect a PostgreSQL database (Vercel Postgres, Supabase, or Neon)
+./deploy-railway.sh backend
 ```
 
-### Option 3: Docker
+Set these environment variables in the Railway dashboard:
+- `DATABASE_URL` - Auto-injected via `${{Postgres.DATABASE_URL}}`
+- `JWT_SECRET` - Your secret key
+- `NODE_ENV` - `production`
+- `ALLOWED_ORIGINS` - Your frontend URL(s)
+- `PORT` - `8080`
 
-```bash
-# Build images
-docker build -t portfolio-backend ./backend
-docker build -t portfolio-frontend ./frontend
+### Frontend: Cloudflare Pages
 
-# Run containers
-docker-compose up -d
-```
+The frontend auto-deploys via GitHub Actions (`.github/workflows/deploy-frontend.yml`) on push to `main` when `frontend/**` files change.
 
-**Environment Setup:**
-- Update `VITE_API_URL` to your backend URL
-- Update `ALLOWED_ORIGINS` to your frontend URL
-- Connect to a managed PostgreSQL instance
-- Set secure `JWT_SECRET`
+Set these GitHub Actions secrets:
+- `VITE_API_URL` - Backend API URL
+- `CLOUDFLARE_API_TOKEN` - Cloudflare API token
+- `CLOUDFLARE_ACCOUNT_ID` - Cloudflare account ID
+
+**📖 Full Guide:** [Deployment Documentation](./Docs/04-guides/deployment.md)
 
 ---
 
@@ -451,8 +432,11 @@ npm run db:studio
 ### Sync Production to Local
 
 ```bash
-# Requires Cloud SQL Proxy running
-./Docs/scripts/sync-prod-to-local.sh
+# Dump from Railway's public DATABASE_URL
+pg_dump "$RAILWAY_DATABASE_URL" > /tmp/prod_backup.sql
+
+# Restore to local database
+psql -U yourusername -d portfolio_db < /tmp/prod_backup.sql
 ```
 
 ---
@@ -603,4 +587,4 @@ Whether you're a researcher, designer, engineer, or any professional looking to 
 
 ---
 
-_Last Updated: December 2025 | Version 1.0.0_
+_Last Updated: March 2026 | Version 1.1.0_

@@ -1,4 +1,4 @@
-# Frontend Dockerfile for Google Cloud Run
+# Frontend Dockerfile for containerized deployment
 FROM node:20-alpine AS base
 
 # Install dependencies only when needed

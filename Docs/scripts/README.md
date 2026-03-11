@@ -1,183 +1,86 @@
 # Deployment Scripts
 
-This directory contains scripts for deploying and managing the portfolio website on Google Cloud Platform.
+This directory previously contained GCP deployment scripts which have been removed. The portfolio now uses Railway (backend) and Cloudflare Pages (frontend).
 
-## Scripts Overview
+## Current Deployment Setup
 
-### Deployment Scripts
+### Backend: Railway
 
-**`deploy-backend.sh`**
-- Builds backend Docker image
-- Pushes to Artifact Registry
-- Deploys to Cloud Run
-- Tests the deployment
+Deployed using the `deploy-railway.sh` script in the repository root.
 
-Usage:
 ```bash
-./Docs/scripts/deploy-backend.sh
+# Show setup instructions
+./deploy-railway.sh setup
+
+# Deploy backend to Railway
+./deploy-railway.sh backend
+
+# Show architecture overview
+./deploy-railway.sh info
 ```
 
-**`deploy-frontend.sh`**
-- Builds frontend Docker image with build args
-- Pushes to Artifact Registry
-- Deploys to Cloud Run
-- Tests the deployment
+The backend auto-deploys from GitHub when connected via the Railway dashboard. Manual CLI deployment is available as a fallback.
 
-Usage:
-```bash
-./Docs/scripts/deploy-frontend.sh
-```
+**Prerequisites:**
+- Railway CLI: `npm install -g @railway/cli`
+- Railway account linked to project: `railway login && cd backend && railway link`
 
-**`deploy-all.sh`**
-- Deploys both backend and frontend
-- Complete deployment workflow
+### Frontend: Cloudflare Pages via GitHub Actions
 
-Usage:
-```bash
-./Docs/scripts/deploy-all.sh all
-```
+The frontend is deployed automatically by the GitHub Actions workflow at `.github/workflows/deploy-frontend.yml`.
 
-### Database Scripts
+**Triggers:**
+- Push to `main` branch (when `frontend/**` files change)
+- Manual trigger via `workflow_dispatch`
 
-**`backup-production-db.sh`**
-- Connects to Cloud SQL via proxy
-- Creates timestamped backup
-- Stores in `/tmp/backups/`
-- Cleans backups older than 7 days
+**GitHub Actions Secrets Required:**
+- `VITE_API_URL` - Backend API URL (e.g., `https://api.aravindbharathy.com`)
+- `CLOUDFLARE_API_TOKEN` - Cloudflare API token with Pages permissions
+- `CLOUDFLARE_ACCOUNT_ID` - Cloudflare account ID
 
-Usage:
-```bash
-./Docs/scripts/backup-production-db.sh
-```
-
-### Setup Scripts
-
-**`setup-gcp.sh`**
-- Initial GCP project setup
-- Creates Cloud SQL instance
-- Sets up Artifact Registry
-- Configures Secret Manager
-- Creates service accounts
-
-Usage:
-```bash
-./Docs/scripts/setup-gcp.sh
-```
-
-## Prerequisites
-
-### Required Tools
-- gcloud CLI
-- Docker (optional for local builds)
-- PostgreSQL client (for backups)
-- cloud-sql-proxy (for database operations)
-
-### Installation
-```bash
-# gcloud CLI
-brew install google-cloud-sdk
-
-# PostgreSQL client
-brew install postgresql
-
-# Cloud SQL Proxy
-brew install cloud-sql-proxy
-```
-
-### Authentication
-```bash
-# Login to gcloud
-gcloud auth login
-
-# Set project
-gcloud config set project personal-website-480707
-
-# Configure Docker
-gcloud auth configure-docker us-central1-docker.pkg.dev
-```
-
-## Environment Setup
-
-### Required Environment Variables
-
-Create `/tmp/backend-env.yaml`:
-```yaml
-ALLOWED_ORIGINS: "https://portfolio-frontend-1017578449720.us-central1.run.app,https://aravindbharathy.com,http://localhost:5173,http://localhost:3000"
-DATABASE_URL: "postgresql://postgres:%40Atr2xLtdda9EfdsXdky@localhost/portfolio?host=/cloudsql/personal-website-480707:us-central1:portfolio-db"
-```
-
-### Secrets in Secret Manager
-- `jwt-secret`: JWT signing key
-- `db-password`: Database password
+No local scripts are needed for frontend deployment.
 
 ## Common Workflows
 
 ### Full Deployment
+
+Backend and frontend deploy independently:
+
+1. **Backend** - Push changes to `main`; Railway auto-deploys from the `backend/` directory
+2. **Frontend** - Push changes to `main` with `frontend/**` path changes; GitHub Actions deploys to Cloudflare Pages
+
+### Backend Only
+
 ```bash
-# 1. Backup database
-./Docs/scripts/backup-production-db.sh
+# Option 1: Push to GitHub (auto-deploy via Railway)
+git push origin main
 
-# 2. Deploy backend
-./Docs/scripts/deploy-backend.sh
-
-# 3. Deploy frontend
-./Docs/scripts/deploy-frontend.sh
+# Option 2: Manual CLI deploy
+./deploy-railway.sh backend
 ```
 
-### Backend Only Update
-```bash
-./Docs/scripts/deploy-backend.sh
-```
+### Frontend Only
 
-### Frontend Only Update
 ```bash
-./Docs/scripts/deploy-frontend.sh
+# Option 1: Push frontend changes to GitHub (auto-deploy via GitHub Actions)
+git push origin main
+
+# Option 2: Manual trigger via GitHub Actions UI (workflow_dispatch)
 ```
 
 ### Database Backup
+
 ```bash
-./Docs/scripts/backup-production-db.sh
-```
-
-## Script Permissions
-
-Make scripts executable:
-```bash
-chmod +x Docs/scripts/*.sh
-```
-
-## Troubleshooting
-
-### Permission Denied
-```bash
-chmod +x Docs/scripts/[script-name].sh
-```
-
-### gcloud Not Found
-```bash
-brew install google-cloud-sdk
-gcloud init
-```
-
-### Build Failures
-Check Cloud Build logs:
-```bash
-gcloud builds list --limit=5
-gcloud builds log [BUILD_ID]
-```
-
-### Deployment Failures
-Check service logs:
-```bash
-gcloud run services logs read portfolio-backend --limit=50
+# Use Railway's public DATABASE_URL to create a backup
+pg_dump "$RAILWAY_DATABASE_URL" > backup_$(date +%Y%m%d_%H%M%S).sql
 ```
 
 ## Related Documentation
 
-- [GCP Deployment Implementation](../03-how/implementation/deployment/gcp-deployment.impl.md)
-- [Production Update Workflow](../03-how/implementation/deployment/production-update-workflow.md)
 - [Deployment Guide](../04-guides/deployment.md)
+- [GitHub Actions Workflow](../../.github/workflows/deploy-frontend.yml)
+- [Railway Deploy Script](../../deploy-railway.sh)
 
 ---
 
-**Last Updated**: 2025-12-10
+**Last Updated**: March 2026

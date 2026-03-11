@@ -247,7 +247,7 @@ Code snippets showing integration
 ✅ Complex infrastructure with multiple services
 
 **Examples:**
-- `gcp-deployment.impl.md` - Google Cloud Platform deployment
+- `railway-cloudflare-deployment.impl.md` - Railway + Cloudflare Pages deployment
 - `production-update-workflow.md` - Safe production update process
 
 #### Bug Fix Documentation (03-how/implementation/bug-fixes/)
